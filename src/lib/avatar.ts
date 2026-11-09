@@ -104,15 +104,15 @@ export function getShirtItem(id: ShirtId | null): ShirtItem | null {
   return SHIRT_ITEMS.find((item) => item.id === id) ?? null;
 }
 
-function isShirtId(value: unknown): value is ShirtId {
+export function isShirtId(value: unknown): value is ShirtId {
   return SHIRT_ITEMS.some((item) => item.id === value);
 }
 
-function isHairId(value: unknown): value is HairId {
+export function isHairId(value: unknown): value is HairId {
   return HAIR_ITEMS.some((item) => item.id === value);
 }
 
-function isFaceId(value: unknown): value is FaceId {
+export function isFaceId(value: unknown): value is FaceId {
   return FACE_ITEMS.some((item) => item.id === value);
 }
 
