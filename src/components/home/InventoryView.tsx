@@ -3,7 +3,7 @@ import { Check, PackageOpen } from 'lucide-react';
 import type { CharacterLook } from '@/components/avatar/characterAppearances';
 import GuestLockedNotice from '@/components/home/GuestLockedNotice';
 import ItemThumbnail from '@/components/home/ItemThumbnail';
-import { HAIR_ITEMS, SHIRT_ITEMS, type HairId, type ShirtId } from '@/lib/avatar';
+import { FACE_ITEMS, HAIR_ITEMS, SHIRT_ITEMS, type FaceId, type HairId, type ShirtId } from '@/lib/avatar';
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
@@ -12,12 +12,15 @@ type InventoryViewProps = {
   /** Guests can look but not change their character. */
   isLocked?: boolean;
   ownedHair: HairId[];
+  ownedFaces: FaceId[];
   equippedShirt: ShirtId | null;
   equippedHair: HairId | null;
+  equippedFace: FaceId | null;
   isSaving: boolean;
   saveFailed: boolean;
   onEquipShirt: (shirt: ShirtId | null) => void;
   onEquipHair: (hair: HairId | null) => void;
+  onEquipFace: (face: FaceId | null) => void;
   onOpenCatalog: () => void;
 };
 
@@ -33,16 +36,29 @@ export default function InventoryView({
   look,
   isLocked = false,
   ownedHair,
+  ownedFaces,
   equippedShirt,
   equippedHair,
+  equippedFace,
   isSaving,
   saveFailed,
   onEquipShirt,
   onEquipHair,
+  onEquipFace,
   onOpenCatalog,
 }: InventoryViewProps) {
   const { t } = usePreferences();
 
+  const purchasedFaces: InventoryEntry[] = FACE_ITEMS.filter((item) => ownedFaces.includes(item.id)).map((item) => {
+    const isEquipped = item.id === equippedFace;
+    return {
+      key: `face-${item.id}`,
+      name: item.name,
+      isEquipped,
+      thumbnail: <ItemThumbnail kind="face" id={item.id} look={look} />,
+      onToggle: () => onEquipFace(isEquipped ? null : item.id),
+    };
+  });
   const purchased: InventoryEntry[] = HAIR_ITEMS.filter((item) => ownedHair.includes(item.id)).map((item) => {
     const isEquipped = item.id === equippedHair;
     return {
@@ -64,7 +80,7 @@ export default function InventoryView({
       onToggle: () => onEquipShirt(isEquipped ? null : item.id),
     };
   });
-  const entries = [...purchased, ...starter];
+  const entries = [...purchasedFaces, ...purchased, ...starter];
 
   return (
     <div className="mx-auto max-w-6xl">
