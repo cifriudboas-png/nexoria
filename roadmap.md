@@ -12,3 +12,5 @@
 - [x] Friends system: send/accept/decline requests, home friends row with "Ver todos", Friends tab, other players profiles
 - [x] Delete every account except NEXORIA (#1) and reset account numbers
 - [x] Catalog accessory "Cabeça de cidade" (17 Nexos), mini city on top of the head, in Acessórios + Destaques
+- [x] Item info window shows the creator (NEXORIA for the 3 current items)
+- [x] Avatar > Corpo: skin color per body part, or the whole body at once
