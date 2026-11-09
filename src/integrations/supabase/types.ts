@@ -46,6 +46,7 @@ export type Database = {
       profiles: {
         Row: {
           account_number: number
+          banned_at: string | null
           created_at: string
           equipped_hair: string | null
           equipped_shirt: string | null
@@ -55,6 +56,7 @@ export type Database = {
         }
         Insert: {
           account_number?: number
+          banned_at?: string | null
           created_at?: string
           equipped_hair?: string | null
           equipped_shirt?: string | null
@@ -64,6 +66,7 @@ export type Database = {
         }
         Update: {
           account_number?: number
+          banned_at?: string | null
           created_at?: string
           equipped_hair?: string | null
           equipped_shirt?: string | null
@@ -73,18 +76,63 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      admin_adjust_nexos: {
+        Args: { _delta: number; _user_id: string }
+        Returns: number
+      }
+      admin_list_players: {
+        Args: { _search?: string }
+        Returns: {
+          account_number: number
+          banned_at: string
+          created_at: string
+          id: string
+          is_admin: boolean
+          nexos: number
+          username: string
+        }[]
+      }
+      admin_set_banned: {
+        Args: { _banned: boolean; _user_id: string }
+        Returns: undefined
+      }
       catalog_price: { Args: { _item: string }; Returns: number }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       purchase_item: { Args: { _item: string }; Returns: undefined }
       set_equipped_hair: { Args: { _hair: string }; Returns: undefined }
       set_equipped_shirt: { Args: { _shirt: string }; Returns: undefined }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -211,6 +259,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin"],
+    },
   },
 } as const
