@@ -10,7 +10,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { canAfford, HAIR_ITEMS, PurchaseError, type HairItem, type HairId } from '@/lib/avatar';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { canAfford, formatItemDate, HAIR_ITEMS, PurchaseError, type HairItem, type HairId } from '@/lib/avatar';
 import { formatNexos } from '@/lib/nexos';
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
@@ -133,6 +134,7 @@ function findLabel(id: string): TranslationKey {
 export default function CatalogView({ look, isLocked = false, nexos, ownedHair, onPurchase, onOpenInventory }: CatalogViewProps) {
   const { t, language } = usePreferences();
   const [buying, setBuying] = useState<HairItem | null>(null);
+  const [viewing, setViewing] = useState<HairItem | null>(null);
   const [step, setStep] = useState<PurchaseStep>('confirm');
   const [purchaseError, setPurchaseError] = useState<TranslationKey | null>(null);
 
@@ -307,9 +309,14 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedHair, 
                     key={item.id}
                     className="relative overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-stone-900/5 dark:bg-stone-900 dark:ring-white/10"
                   >
-                    <div className="aspect-square bg-gradient-to-b from-stone-50 to-stone-200 dark:from-stone-800 dark:to-stone-950">
+                    <button
+                      type="button"
+                      onClick={() => setViewing(item)}
+                      aria-label={t('catalogViewDetails', { item: t(item.name) })}
+                      className="block aspect-square w-full cursor-pointer bg-gradient-to-b from-stone-50 to-stone-200 transition-opacity duration-200 hover:opacity-90 focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-emerald-300 dark:from-stone-800 dark:to-stone-950"
+                    >
                       <ItemThumbnail kind="hair" id={item.id} look={look} />
-                    </div>
+                    </button>
                     <div className="p-3">
                       <h3 className="line-clamp-2 text-sm font-semibold text-stone-800 dark:text-stone-100">{t(item.name)}</h3>
                       <p className="mt-1 text-sm font-bold text-emerald-700 dark:text-emerald-400">
@@ -347,6 +354,40 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedHair, 
           )}
         </section>
       </div>
+      <Dialog open={viewing !== null} onOpenChange={(open) => !open && setViewing(null)}>
+        <DialogContent className="sm:max-w-md">
+          {viewing && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{t(viewing.name)}</DialogTitle>
+                <DialogDescription className="sr-only">{t(viewing.description)}</DialogDescription>
+              </DialogHeader>
+              <div className="mx-auto aspect-square w-48 overflow-hidden rounded-lg bg-gradient-to-b from-stone-50 to-stone-200 dark:from-stone-800 dark:to-stone-950">
+                <ItemThumbnail kind="hair" id={viewing.id} look={look} />
+              </div>
+              <dl className="space-y-3 text-sm">
+                <div>
+                  <dt className="font-semibold text-stone-500 dark:text-stone-400">{t('catalogInfoPrice')}</dt>
+                  <dd className="font-bold text-emerald-700 dark:text-emerald-400" data-testid="item-info-price">
+                    {formatNexos(viewing.priceNexos, language)} {t('nexos')}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="font-semibold text-stone-500 dark:text-stone-400">{t('catalogInfoDescription')}</dt>
+                  <dd className="text-stone-800 dark:text-stone-100">{t(viewing.description)}</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold text-stone-500 dark:text-stone-400">{t('catalogInfoCreated')}</dt>
+                  <dd className="text-stone-800 dark:text-stone-100" data-testid="item-info-created">
+                    {formatItemDate(viewing.createdAt, language)}
+                  </dd>
+                </div>
+              </dl>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <AlertDialog
         open={buying !== null}
         onOpenChange={(open) => {
