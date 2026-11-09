@@ -36,6 +36,13 @@
       "when": 1794266871149,
       "tag": "0004_city_head_accessory_item",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794267580182,
+      "tag": "0005_body_colors",
+      "breakpoints": true
     }
   ]
 }

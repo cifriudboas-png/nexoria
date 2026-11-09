@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import CharacterViewer from '@/components/avatar/CharacterViewer';
 import type { CharacterLook } from '@/components/avatar/characterAppearances';
 import type { AccessoryId, FaceId, HairId, ShirtId } from '@/lib/avatar';
+import type { BodyColors } from '@/lib/bodyColors';
 import { getProfileDetails, type ProfileDetails } from '@/lib/profile';
 import { usePreferences } from '@/lib/preferences-context';
 
@@ -13,11 +14,12 @@ type ProfileViewProps = {
   hair: HairId | null;
   face?: FaceId | null;
   accessory?: AccessoryId | null;
+  bodyColors?: BodyColors | undefined;
 };
 
 type DetailsStatus = 'loading' | 'ready' | 'error';
 
-export default function ProfileView({ displayName, look, isGuest, shirt, hair, face = null, accessory = null }: ProfileViewProps) {
+export default function ProfileView({ displayName, look, isGuest, shirt, hair, face = null, accessory = null, bodyColors }: ProfileViewProps) {
   const { t, language } = usePreferences();
   const [details, setDetails] = useState<ProfileDetails | null>(null);
   const [status, setStatus] = useState<DetailsStatus>(isGuest ? 'ready' : 'loading');
@@ -52,7 +54,7 @@ export default function ProfileView({ displayName, look, isGuest, shirt, hair, f
   return (
     <section className="mx-auto flex w-full max-w-4xl flex-col gap-6 lg:flex-row lg:items-center">
       <div className="relative h-96 w-full overflow-hidden rounded-2xl bg-gradient-to-b from-sky-100 to-sky-300 shadow-sm ring-1 ring-stone-900/5 dark:from-stone-800 dark:to-stone-900 dark:ring-white/10 sm:h-[28rem] lg:flex-1">
-        <CharacterViewer className="h-full w-full" framing="full" look={look} shirt={shirt} hair={hair} face={face} accessory={accessory} interactive />
+        <CharacterViewer className="h-full w-full" framing="full" look={look} shirt={shirt} hair={hair} face={face} accessory={accessory} bodyColors={bodyColors} interactive />
         <p className="pointer-events-none absolute bottom-4 left-0 right-0 text-center text-xs font-medium text-sky-900/80 dark:text-stone-400">
           {t('dragToRotate')}
         </p>

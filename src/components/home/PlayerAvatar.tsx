@@ -36,6 +36,7 @@ export default function PlayerAvatar({ player, onOpen, size = 'md', showName = t
           hair={player.hair}
           face={player.face}
           accessory={player.accessory}
+          bodyColors={player.bodyColors}
           fixedYaw={0}
         />
       </button>

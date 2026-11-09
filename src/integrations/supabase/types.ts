@@ -89,6 +89,7 @@ export type Database = {
         Row: {
           account_number: number
           banned_at: string | null
+          body_colors: Json
           created_at: string
           equipped_accessory: string | null
           equipped_face: string | null
@@ -101,6 +102,7 @@ export type Database = {
         Insert: {
           account_number?: number
           banned_at?: string | null
+          body_colors?: Json
           created_at?: string
           equipped_accessory?: string | null
           equipped_face?: string | null
@@ -113,6 +115,7 @@ export type Database = {
         Update: {
           account_number?: number
           banned_at?: string | null
+          body_colors?: Json
           created_at?: string
           equipped_accessory?: string | null
           equipped_face?: string | null
@@ -172,6 +175,7 @@ export type Database = {
         Args: { _username: string }
         Returns: {
           account_number: number
+          body_colors: Json
           created_at: string
           equipped_accessory: string
           equipped_face: string
@@ -194,6 +198,7 @@ export type Database = {
         Args: never
         Returns: {
           account_number: number
+          body_colors: Json
           direction: string
           equipped_accessory: string
           equipped_face: string
@@ -208,6 +213,7 @@ export type Database = {
         Args: never
         Returns: {
           account_number: number
+          body_colors: Json
           equipped_accessory: string
           equipped_face: string
           equipped_hair: string
@@ -227,6 +233,7 @@ export type Database = {
         Args: { _query: string }
         Returns: {
           account_number: number
+          body_colors: Json
           equipped_accessory: string
           equipped_face: string
           equipped_hair: string
@@ -236,6 +243,7 @@ export type Database = {
         }[]
       }
       send_friend_request: { Args: { _user_id: string }; Returns: string }
+      set_body_colors: { Args: { _colors: Json }; Returns: undefined }
       set_equipped_accessory: {
         Args: { _accessory: string }
         Returns: undefined

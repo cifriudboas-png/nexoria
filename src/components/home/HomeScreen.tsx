@@ -18,6 +18,7 @@ import {
   type ShirtId,
 } from '@/lib/avatar';
 import InventoryView from '@/components/home/InventoryView';
+import { saveBodyColors, type BodyColors } from '@/lib/bodyColors';
 import AdminView from '@/components/home/AdminView';
 import { isCurrentUserAdmin } from '@/lib/admin';
 import type { CharacterLook } from '@/components/avatar/characterAppearances';
@@ -66,6 +67,7 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
   const [ownedFaces, setOwnedFaces] = useState<FaceId[]>([]);
   const [equippedAccessory, setEquippedAccessory] = useState<AccessoryId | null>(null);
   const [ownedAccessories, setOwnedAccessories] = useState<AccessoryId[]>([]);
+  const [bodyColors, setBodyColors] = useState<BodyColors>({});
   const [nexos, setNexos] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [saveFailed, setSaveFailed] = useState(false);
@@ -89,6 +91,7 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
         setOwnedFaces(state.ownedFaces);
         setEquippedAccessory(state.accessory);
         setOwnedAccessories(state.ownedAccessories);
+        setBodyColors(state.bodyColors);
         setNexos(state.nexos);
       })
       .catch(() => undefined);
@@ -162,6 +165,22 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
     }
   };
 
+  const handleChangeBodyColors = async (next: BodyColors) => {
+    if (isGuest) return;
+    const previous = bodyColors;
+    setBodyColors(next);
+    setSaveFailed(false);
+    setIsSaving(true);
+    try {
+      await saveBodyColors(next);
+    } catch {
+      setBodyColors(previous);
+      setSaveFailed(true);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handlePurchase = async (itemId: CatalogItemId) => {
     if (isGuest) throw new Error('Guests cannot buy items');
     const item = getCatalogItem(itemId);
@@ -208,6 +227,7 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
               equippedHair={equippedHair}
               equippedFace={equippedFace}
               equippedAccessory={equippedAccessory}
+              bodyColors={bodyColors}
               ownedHair={ownedHair}
               ownedFaces={ownedFaces}
               ownedAccessories={ownedAccessories}
@@ -218,6 +238,7 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
               onEquipHair={handleEquipHair}
               onEquipFace={handleEquipFace}
               onEquipAccessory={handleEquipAccessory}
+              onChangeBodyColors={handleChangeBodyColors}
               onOpenCatalog={() => setView('catalog')}
             />
           ) : view === 'catalog' ? (
@@ -253,7 +274,7 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
           ) : view === 'profile' && viewedPlayer ? (
             <PlayerProfileView key={viewedPlayer} username={viewedPlayer} isGuest={isGuest} />
           ) : view === 'profile' ? (
-            <ProfileView displayName={displayName} look={look} isGuest={isGuest} shirt={equippedShirt} hair={equippedHair} face={equippedFace} accessory={equippedAccessory} />
+            <ProfileView displayName={displayName} look={look} isGuest={isGuest} shirt={equippedShirt} hair={equippedHair} face={equippedFace} accessory={equippedAccessory} bodyColors={bodyColors} />
           ) : (
             <>
               <section className="flex items-end gap-6">
@@ -263,7 +284,7 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
                   aria-label={t('openProfile')}
                   className="relative h-24 w-24 shrink-0 cursor-pointer rounded-full border-4 border-white bg-gradient-to-br from-sky-300 to-sky-500 shadow-lg transition-transform duration-300 hover:scale-105 focus:outline-none focus-visible:ring-4 focus-visible:ring-sky-300 dark:border-stone-800 sm:h-32 sm:w-32"
                 >
-                  <CharacterViewer className="h-full w-full rounded-full" framing="bust" look={look} shirt={equippedShirt} hair={equippedHair} face={equippedFace} accessory={equippedAccessory} />
+                  <CharacterViewer className="h-full w-full rounded-full" framing="bust" look={look} shirt={equippedShirt} hair={equippedHair} face={equippedFace} accessory={equippedAccessory} bodyColors={bodyColors} />
                 </button>
                 <h1 className="pb-2 text-4xl font-black leading-tight tracking-tight text-stone-900 dark:text-stone-100 sm:text-6xl">
                   {t('greetingPrefix')}
