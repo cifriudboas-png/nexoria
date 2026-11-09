@@ -7,7 +7,8 @@ type Framing = 'bust' | 'full' | 'head' | 'accessory';
 
 const FRAMING_TRANSFORM: Record<Framing, string> = {
   bust: 'translateY(18px) scale(0.95)',
-  full: 'translateY(4px) scale(2.2)',
+  // Leaves room above the head for tall accessories like "Cabeça de cidade".
+  full: 'translateY(26px) scale(2.05)',
   head: 'translateY(100px) scale(1.55)',
   // Centers on the space above the head, where hats and other accessories sit.
   accessory: 'translateY(88px) scale(1.3)',
