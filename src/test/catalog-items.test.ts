@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canAfford, HAIR_ITEMS } from '@/lib/avatar';
+import { canAfford, formatItemDate, HAIR_ITEMS } from '@/lib/avatar';
 
 describe('catalog hair items', () => {
   const hair = HAIR_ITEMS.find((item) => item.id === 'cool_blond_hair')!;
@@ -10,6 +10,11 @@ describe('catalog hair items', () => {
 
   it('a player with 0 Nexos can buy a 0 Nexos item', () => {
     expect(canAfford(hair, 0)).toBe(true);
+  });
+
+  it('"Cabelo maneiro loiro" was created on 09/11/2026', () => {
+    expect(formatItemDate(hair.createdAt, 'pt')).toBe('09/11/2026');
+    expect(formatItemDate(hair.createdAt, 'en')).toBe('November 9, 2026');
   });
 
   it('a player cannot buy an item that costs more than their Nexos', () => {

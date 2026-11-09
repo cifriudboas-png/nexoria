@@ -15,6 +15,9 @@ export type HairItem = {
   id: HairId;
   name: TranslationKey;
   priceNexos: number;
+  description: TranslationKey;
+  /** Day the item was added to the catalog, as YYYY-MM-DD. */
+  createdAt: string;
 };
 
 export type EquippedOutfit = {
@@ -40,7 +43,23 @@ export class PurchaseError extends Error {
 
 export const SHIRT_ITEMS: ShirtItem[] = [{ id: 'nexoria_logo', name: 'avatarShirtNexoria', imageUrl: nexoriaLogo.url }];
 
-export const HAIR_ITEMS: HairItem[] = [{ id: 'cool_blond_hair', name: 'avatarHairCoolBlond', priceNexos: 0 }];
+export const HAIR_ITEMS: HairItem[] = [
+  {
+    id: 'cool_blond_hair',
+    name: 'avatarHairCoolBlond',
+    priceNexos: 0,
+    description: 'avatarHairCoolBlondDescription',
+    createdAt: '2026-11-09',
+  },
+];
+
+/** Creation date for the item info window: "09/11/2026" in pt, "November 9, 2026" in en. */
+export function formatItemDate(isoDate: string, language: 'pt' | 'en'): string {
+  const date = new Date(`${isoDate}T00:00:00Z`);
+  return language === 'pt'
+    ? date.toLocaleDateString('pt-BR', { timeZone: 'UTC' })
+    : date.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric', year: 'numeric' });
+}
 
 export function getHairItem(id: HairId | null): HairItem | null {
   return HAIR_ITEMS.find((item) => item.id === id) ?? null;
