@@ -111,7 +111,7 @@ export default function BodyColorPicker({ look, bodyColors, isLocked = false, on
                   className="flex aspect-square items-center justify-center rounded-md ring-1 ring-stone-900/15 transition-transform duration-200 hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-sky-300 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100 dark:ring-white/20"
                   style={{ background: color }}
                 >
-                  {isCurrent && <Check className="h-4 w-4 text-stone-900 mix-blend-difference invert" />}
+                  {isCurrent && <Check className="h-4 w-4 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.9)]" />}
                 </button>
               );
             })}

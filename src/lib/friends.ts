@@ -1,4 +1,5 @@
 import { isAccessoryId, isFaceId, isHairId, isShirtId, type AccessoryId, type FaceId, type HairId, type ShirtId } from '@/lib/avatar';
+import { parseBodyColors, type BodyColors } from '@/lib/bodyColors';
 import { supabase } from '@/lib/supabase';
 import type { TranslationKey } from '@/lib/translations';
 
@@ -13,6 +14,7 @@ export type PlayerSummary = {
   hair: HairId | null;
   face: FaceId | null;
   accessory: AccessoryId | null;
+  bodyColors: BodyColors;
 };
 
 export type PlayerProfile = PlayerSummary & {
@@ -46,6 +48,7 @@ type PlayerRow = {
   equipped_hair: string | null;
   equipped_face: string | null;
   equipped_accessory?: string | null;
+  body_colors?: unknown;
 };
 
 function toSummary(row: PlayerRow): PlayerSummary {
@@ -57,6 +60,7 @@ function toSummary(row: PlayerRow): PlayerSummary {
     hair: isHairId(row.equipped_hair) ? row.equipped_hair : null,
     face: isFaceId(row.equipped_face) ? row.equipped_face : null,
     accessory: isAccessoryId(row.equipped_accessory) ? row.equipped_accessory : null,
+    bodyColors: parseBodyColors(row.body_colors),
   };
 }
 

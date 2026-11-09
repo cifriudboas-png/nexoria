@@ -1,4 +1,5 @@
 import nexoriaLogo from '@/assets/nexoria_logo_transparent.png.asset.json';
+import { parseBodyColors, type BodyColors } from '@/lib/bodyColors';
 import { supabase } from '@/lib/supabase';
 import type { TranslationKey } from '@/lib/translations';
 
@@ -20,6 +21,8 @@ type CatalogItemBase = {
   description: TranslationKey;
   /** Day the item was added to the catalog, as YYYY-MM-DD. */
   createdAt: string;
+  /** Display name of the account that created the item. */
+  creator: string;
   /** Catalog categories (and parents) the item is listed under. */
   categories: string[];
 };
@@ -40,6 +43,7 @@ export type AvatarState = EquippedOutfit & {
   ownedHair: HairId[];
   ownedFaces: FaceId[];
   ownedAccessories: AccessoryId[];
+  bodyColors: BodyColors;
   nexos: number;
 };
 
@@ -65,6 +69,7 @@ export const HAIR_ITEMS: HairItem[] = [
     priceNexos: 0,
     description: 'avatarHairCoolBlondDescription',
     createdAt: '2026-11-09',
+    creator: 'NEXORIA',
     categories: ['all', 'featured', 'featured-all', 'body', 'body-hair'],
   },
 ];
@@ -77,6 +82,7 @@ export const FACE_ITEMS: FaceItem[] = [
     priceNexos: 5,
     description: 'avatarFaceConfidentSmileDescription',
     createdAt: '2026-11-09',
+    creator: 'NEXORIA',
     categories: ['all', 'body', 'body-faces'],
   },
 ];
@@ -89,6 +95,7 @@ export const ACCESSORY_ITEMS: AccessoryItem[] = [
     priceNexos: 17,
     description: 'avatarAccessoryCityHeadDescription',
     createdAt: '2026-11-09',
+    creator: 'NEXORIA',
     categories: ['all', 'featured', 'featured-all', 'featured-accessories', 'accessories', 'accessories-hats'],
   },
 ];
@@ -145,6 +152,7 @@ export async function getAvatarState(): Promise<AvatarState> {
     ownedHair: [],
     ownedFaces: [],
     ownedAccessories: [],
+    bodyColors: {},
     nexos: 0,
   };
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -153,7 +161,7 @@ export async function getAvatarState(): Promise<AvatarState> {
   if (!userId) return empty;
 
   const [profileResult, inventoryResult] = await Promise.all([
-    supabase.from('profiles').select('equipped_shirt, equipped_hair, equipped_face, equipped_accessory, nexos').eq('id', userId).maybeSingle(),
+    supabase.from('profiles').select('equipped_shirt, equipped_hair, equipped_face, equipped_accessory, body_colors, nexos').eq('id', userId).maybeSingle(),
     supabase.from('inventory_items').select('item_id').eq('user_id', userId),
   ]);
   if (profileResult.error) throw profileResult.error;
@@ -169,6 +177,7 @@ export async function getAvatarState(): Promise<AvatarState> {
     ownedHair: owned.filter(isHairId),
     ownedFaces: owned.filter(isFaceId),
     ownedAccessories: owned.filter(isAccessoryId),
+    bodyColors: parseBodyColors(profile?.body_colors),
     nexos: Number(profile?.nexos ?? 0),
   };
 }

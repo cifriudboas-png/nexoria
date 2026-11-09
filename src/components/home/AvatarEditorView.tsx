@@ -1,7 +1,9 @@
 import { useState, type ReactNode } from 'react';
 import { Check, ChevronRight } from 'lucide-react';
 import GuestLockedNotice from '@/components/home/GuestLockedNotice';
+import BodyColorPicker from '@/components/home/BodyColorPicker';
 import ItemThumbnail from '@/components/home/ItemThumbnail';
+import type { BodyColors } from '@/lib/bodyColors';
 import CharacterViewer from '@/components/avatar/CharacterViewer';
 import type { CharacterLook } from '@/components/avatar/characterAppearances';
 import { ACCESSORY_ITEMS, FACE_ITEMS, HAIR_ITEMS, SHIRT_ITEMS, type AccessoryId, type FaceId, type HairId, type ShirtId } from '@/lib/avatar';
@@ -26,6 +28,7 @@ type AvatarEditorViewProps = {
   equippedHair: HairId | null;
   equippedFace: FaceId | null;
   equippedAccessory: AccessoryId | null;
+  bodyColors: BodyColors;
   ownedHair: HairId[];
   ownedFaces: FaceId[];
   ownedAccessories: AccessoryId[];
@@ -37,6 +40,7 @@ type AvatarEditorViewProps = {
   onEquipHair: (hair: HairId | null) => void;
   onEquipFace: (face: FaceId | null) => void;
   onEquipAccessory: (accessory: AccessoryId | null) => void;
+  onChangeBodyColors: (colors: BodyColors) => void;
   onOpenCatalog: () => void;
 };
 
@@ -55,6 +59,7 @@ export default function AvatarEditorView({
   equippedHair,
   equippedFace,
   equippedAccessory,
+  bodyColors,
   ownedHair,
   ownedFaces,
   ownedAccessories,
@@ -65,6 +70,7 @@ export default function AvatarEditorView({
   onEquipHair,
   onEquipFace,
   onEquipAccessory,
+  onChangeBodyColors,
   onOpenCatalog,
 }: AvatarEditorViewProps) {
   const { t } = usePreferences();
@@ -155,6 +161,7 @@ export default function AvatarEditorView({
               hair={equippedHair}
               face={equippedFace}
               accessory={equippedAccessory}
+              bodyColors={bodyColors}
               interactive
               fixedYaw={is3D ? null : FACING_LEFT_YAW}
             />
@@ -206,6 +213,10 @@ export default function AvatarEditorView({
             <ChevronRight className="h-3 w-3" />
             {t('avatarAll')}
           </p>
+
+          {tab === 'body' && (
+            <BodyColorPicker look={look} bodyColors={bodyColors} isLocked={isLocked} onChange={onChangeBodyColors} />
+          )}
 
           {items.length > 0 ? (
             <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">

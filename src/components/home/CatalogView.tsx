@@ -380,6 +380,12 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedItems,
                   <dd className="text-stone-800 dark:text-stone-100">{t(viewing.description)}</dd>
                 </div>
                 <div>
+                  <dt className="font-semibold text-stone-500 dark:text-stone-400">{t('catalogInfoCreator')}</dt>
+                  <dd className="font-semibold text-stone-800 dark:text-stone-100" data-testid="item-info-creator">
+                    {viewing.creator}
+                  </dd>
+                </div>
+                <div>
                   <dt className="font-semibold text-stone-500 dark:text-stone-400">{t('catalogInfoCreated')}</dt>
                   <dd className="text-stone-800 dark:text-stone-100" data-testid="item-info-created">
                     {formatItemDate(viewing.createdAt, language)}
