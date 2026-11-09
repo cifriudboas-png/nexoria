@@ -7,3 +7,4 @@
 - [x] Rebuild NEXORIA-only Admin panel: player list, give/take Nexos, ban/unban
 - [x] Delete the "kyle" account
 - [x] Abbreviate Nexos amounts (1000 → 1K, then M, B, T)
+- [x] Catalog item info window (name, price, description, creation date) on photo click
