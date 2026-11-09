@@ -38,3 +38,5 @@ use the editor.
 - Avatar 3D items (like hair) are built from CSS 3D pieces (`CharacterBlock` boxes, `CharacterSpike` pyramids) inside the existing CSS character viewer, not three.js, so they match and rotate with the imported character renderer.
 - Catalog purchases go through the security-definer `purchase_item` RPC, which reads the price from the database `catalog_price` function, deducts `profiles.nexos` and adds an `inventory_items` row; the client price list in `src/lib/avatar.ts` is display-only and must be kept in sync with `catalog_price`, and equip RPCs for sold items require ownership.
 
+- Admin access uses a separate `user_roles` table checked by the `has_role` security-definer function (never usernames or client state); the signup trigger grants `admin` only to the `nexoria` username, and every admin RPC (`admin_list_players`, `admin_adjust_nexos`, `admin_set_banned`) re-checks the role in the database.
+- Bans set `profiles.banned_at` through `admin_set_banned` and also ban the auth user from the `setPlayerBanned` server function, because the auth-level ban blocks sign-in while the column lets player RPCs refuse banned accounts.

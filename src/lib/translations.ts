@@ -155,7 +155,7 @@ const PT = {
   accountBanned: 'Esta conta foi banida.',
   menuAdmin: 'Admin',
   adminTitle: 'Painel Admin',
-  adminSubtitle: 'Veja os jogadores, dê ou tire Nexos e banir contas.',
+  adminSubtitle: 'Veja os jogadores, dê ou tire Nexos e bana contas.',
   adminSearchLabel: 'Buscar jogador',
   adminSearchPlaceholder: 'Nome de usuário ou ID',
   adminSearch: 'Buscar',
