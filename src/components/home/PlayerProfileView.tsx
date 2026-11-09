@@ -85,6 +85,7 @@ export default function PlayerProfileView({ username, isGuest }: PlayerProfileVi
           shirt={profile.shirt}
           hair={profile.hair}
           face={profile.face}
+          accessory={profile.accessory}
           interactive
         />
         <p className="pointer-events-none absolute bottom-4 left-0 right-0 text-center text-xs font-medium text-sky-900/80 dark:text-stone-400">
