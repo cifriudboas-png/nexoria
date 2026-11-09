@@ -73,7 +73,7 @@ export const FACE_ITEMS: FaceItem[] = [
     priceNexos: 5,
     description: 'avatarFaceConfidentSmileDescription',
     createdAt: '2026-11-09',
-    categories: ['all', 'featured', 'featured-all', 'featured-faces', 'body', 'body-faces'],
+    categories: ['all', 'body', 'body-faces'],
   },
 ];
 
