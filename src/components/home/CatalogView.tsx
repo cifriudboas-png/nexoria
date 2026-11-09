@@ -11,13 +11,18 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { canAfford, formatItemDate, HAIR_ITEMS, PurchaseError, type HairItem, type HairId } from '@/lib/avatar';
+import { canAfford, CATALOG_ITEMS, formatItemDate, PurchaseError, type CatalogItem, type CatalogItemId } from '@/lib/avatar';
 import { formatNexos } from '@/lib/nexos';
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
-// Categories (and parents) each hair item is listed under.
-const HAIR_CATEGORIES = ['all', 'featured', 'featured-all', 'body', 'body-hair'];
+function CatalogThumbnail({ item, look }: { item: CatalogItem; look: CharacterLook }) {
+  return item.kind === 'face' ? (
+    <ItemThumbnail kind="face" id={item.id} look={look} />
+  ) : (
+    <CatalogThumbnail item={item} look={look} />
+  );
+}
 
 function normalizeSearch(text: string): string {
   return text
@@ -31,8 +36,8 @@ type CatalogViewProps = {
   /** Guests can browse but not buy. */
   isLocked?: boolean;
   nexos: number;
-  ownedHair: HairId[];
-  onPurchase: (hair: HairId) => Promise<void>;
+  ownedItems: CatalogItemId[];
+  onPurchase: (item: CatalogItemId) => Promise<void>;
   onOpenInventory: () => void;
 };
 
@@ -131,14 +136,14 @@ function findLabel(id: string): TranslationKey {
   return 'catalogAll';
 }
 
-export default function CatalogView({ look, isLocked = false, nexos, ownedHair, onPurchase, onOpenInventory }: CatalogViewProps) {
+export default function CatalogView({ look, isLocked = false, nexos, ownedItems, onPurchase, onOpenInventory }: CatalogViewProps) {
   const { t, language } = usePreferences();
-  const [buying, setBuying] = useState<HairItem | null>(null);
-  const [viewing, setViewing] = useState<HairItem | null>(null);
+  const [buying, setBuying] = useState<CatalogItem | null>(null);
+  const [viewing, setViewing] = useState<CatalogItem | null>(null);
   const [step, setStep] = useState<PurchaseStep>('confirm');
   const [purchaseError, setPurchaseError] = useState<TranslationKey | null>(null);
 
-  const startPurchase = (item: HairItem) => {
+  const startPurchase = (item: CatalogItem) => {
     if (isLocked) return;
     setBuying(item);
     setStep('confirm');
@@ -177,10 +182,10 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedHair, 
       ? t('catalogFeaturedHeading')
       : t(findLabel(selected));
 
-  const visibleHair = HAIR_ITEMS.filter((item) =>
+  const visibleItems = CATALOG_ITEMS.filter((item) =>
     submittedQuery
       ? normalizeSearch(t(item.name)).includes(normalizeSearch(submittedQuery))
-      : HAIR_CATEGORIES.includes(selected),
+      : item.categories.includes(selected),
   );
 
   return (
@@ -300,10 +305,10 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedHair, 
             </button>
           </div>
 
-          {visibleHair.length > 0 ? (
+          {visibleItems.length > 0 ? (
             <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {visibleHair.map((item) => {
-                const isOwned = ownedHair.includes(item.id);
+              {visibleItems.map((item) => {
+                const isOwned = ownedItems.includes(item.id);
                 return (
                   <article
                     key={item.id}
@@ -315,7 +320,7 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedHair, 
                       aria-label={t('catalogViewDetails', { item: t(item.name) })}
                       className="block aspect-square w-full cursor-pointer bg-gradient-to-b from-stone-50 to-stone-200 transition-opacity duration-200 hover:opacity-90 focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-emerald-300 dark:from-stone-800 dark:to-stone-950"
                     >
-                      <ItemThumbnail kind="hair" id={item.id} look={look} />
+                      <CatalogThumbnail item={item} look={look} />
                     </button>
                     <div className="p-3">
                       <h3 className="line-clamp-2 text-sm font-semibold text-stone-800 dark:text-stone-100">{t(item.name)}</h3>
@@ -363,7 +368,7 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedHair, 
                 <DialogDescription className="sr-only">{t(viewing.description)}</DialogDescription>
               </DialogHeader>
               <div className="mx-auto aspect-square w-48 overflow-hidden rounded-lg bg-gradient-to-b from-stone-50 to-stone-200 dark:from-stone-800 dark:to-stone-950">
-                <ItemThumbnail kind="hair" id={viewing.id} look={look} />
+                <CatalogThumbnail item={viewing} look={look} />
               </div>
               <dl className="space-y-3 text-sm">
                 <div>
@@ -431,7 +436,7 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedHair, 
               </AlertDialogHeader>
               <div className="flex items-center gap-4">
                 <div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-gradient-to-b from-stone-50 to-stone-200 dark:from-stone-800 dark:to-stone-950">
-                  <ItemThumbnail kind="hair" id={buying.id} look={look} />
+                  <CatalogThumbnail item={buying} look={look} />
                 </div>
                 <div className="text-sm">
                   <p className="font-semibold text-stone-800 dark:text-stone-100">{t(buying.name)}</p>
