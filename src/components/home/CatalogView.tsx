@@ -20,7 +20,7 @@ function CatalogThumbnail({ item, look }: { item: CatalogItem; look: CharacterLo
   return item.kind === 'face' ? (
     <ItemThumbnail kind="face" id={item.id} look={look} />
   ) : (
-    <CatalogThumbnail item={item} look={look} />
+    <ItemThumbnail kind="hair" id={item.id} look={look} />
   );
 }
 
