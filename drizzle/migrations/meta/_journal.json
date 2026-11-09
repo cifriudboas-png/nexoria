@@ -15,6 +15,13 @@
       "when": 1794263590603,
       "tag": "0001_admin_panel_roles_ban_nexos",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794264977067,
+      "tag": "0002_confident_smile_face_item",
+      "breakpoints": true
     }
   ]
 }
