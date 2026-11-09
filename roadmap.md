@@ -5,3 +5,5 @@
 - [x] Remove the fringe from "Cabelo maneiro loiro"
 - [x] Move "Cabelo maneiro loiro" to the "Corpo" category (avatar editor) / "Partes do corpo" (catalog)
 - [x] Rebuild NEXORIA-only Admin panel: player list, give/take Nexos, ban/unban
+- [x] Delete the "kyle" account
+- [x] Abbreviate Nexos amounts (1000 → 1K, then M, B, T)
