@@ -3,6 +3,7 @@ import { useServerFn } from '@tanstack/react-start';
 import { Ban, Minus, Plus, Search, ShieldCheck, Undo2 } from 'lucide-react';
 import { setPlayerBanned } from '@/lib/admin.functions';
 import { AdminError, adjustNexos, adminErrorKey, listPlayers, parseNexosAmount, type AdminPlayer } from '@/lib/admin';
+import { formatNexos, formatNexosFull } from '@/lib/nexos';
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
@@ -15,7 +16,7 @@ type AdminViewProps = {
 type RowMessage = { kind: 'ok' | 'error'; key: TranslationKey; params?: Record<string, string | number> };
 
 export default function AdminView({ currentUsername, onOwnNexosChange }: AdminViewProps) {
-  const { t } = usePreferences();
+  const { t, language } = usePreferences();
   const banPlayer = useServerFn(setPlayerBanned);
   const [search, setSearch] = useState('');
   const [players, setPlayers] = useState<AdminPlayer[]>([]);
@@ -73,7 +74,7 @@ export default function AdminView({ currentUsername, onOwnNexosChange }: AdminVi
       setMessage(player.id, {
         kind: 'ok',
         key: sign > 0 ? 'adminGaveNexos' : 'adminTookNexos',
-        params: { amount: parsed.amount },
+        params: { amount: formatNexos(parsed.amount, language) },
       });
       if (player.username === currentUsername) onOwnNexosChange(balance);
     } catch (err) {
@@ -165,7 +166,10 @@ export default function AdminView({ currentUsername, onOwnNexosChange }: AdminVi
                     </span>
                   )}
                   <span className="ml-auto text-sm font-semibold text-stone-700 dark:text-stone-200">
-                    {t('nexos')}: <span data-testid={`nexos-${player.username}`}>{player.nexos}</span>
+                    {t('nexos')}:{' '}
+                    <span data-testid={`nexos-${player.username}`} title={formatNexosFull(player.nexos, language)}>
+                      {formatNexos(player.nexos, language)}
+                    </span>
                   </span>
                 </div>
 

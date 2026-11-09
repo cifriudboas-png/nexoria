@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { canAfford, HAIR_ITEMS, PurchaseError, type HairItem, type HairId } from '@/lib/avatar';
+import { formatNexos } from '@/lib/nexos';
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
@@ -130,7 +131,7 @@ function findLabel(id: string): TranslationKey {
 }
 
 export default function CatalogView({ look, isLocked = false, nexos, ownedHair, onPurchase, onOpenInventory }: CatalogViewProps) {
-  const { t } = usePreferences();
+  const { t, language } = usePreferences();
   const [buying, setBuying] = useState<HairItem | null>(null);
   const [step, setStep] = useState<PurchaseStep>('confirm');
   const [purchaseError, setPurchaseError] = useState<TranslationKey | null>(null);
@@ -312,7 +313,7 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedHair, 
                     <div className="p-3">
                       <h3 className="line-clamp-2 text-sm font-semibold text-stone-800 dark:text-stone-100">{t(item.name)}</h3>
                       <p className="mt-1 text-sm font-bold text-emerald-700 dark:text-emerald-400">
-                        {item.priceNexos} {t('nexos')}
+                        {formatNexos(item.priceNexos, language)} {t('nexos')}
                       </p>
                       {isOwned ? (
                         <p className="mt-3 flex w-full items-center justify-center gap-1 rounded-md bg-stone-100 px-3 py-1.5 text-xs font-semibold text-stone-600 dark:bg-stone-800 dark:text-stone-300">
@@ -384,7 +385,7 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedHair, 
               <AlertDialogHeader>
                 <AlertDialogTitle>{t('catalogConfirmTitle')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  {t('catalogConfirmText', { item: t(buying.name), price: buying.priceNexos })}
+                  {t('catalogConfirmText', { item: t(buying.name), price: formatNexos(buying.priceNexos, language) })}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <div className="flex items-center gap-4">
@@ -394,9 +395,11 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedHair, 
                 <div className="text-sm">
                   <p className="font-semibold text-stone-800 dark:text-stone-100">{t(buying.name)}</p>
                   <p className="font-bold text-emerald-700 dark:text-emerald-400">
-                    {buying.priceNexos} {t('nexos')}
+                    {formatNexos(buying.priceNexos, language)} {t('nexos')}
                   </p>
-                  <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">{t('catalogBalance', { nexos })}</p>
+                  <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                    {t('catalogBalance', { nexos: formatNexos(nexos, language) })}
+                  </p>
                 </div>
               </div>
               {purchaseError && (

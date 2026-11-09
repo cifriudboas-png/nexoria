@@ -1,6 +1,7 @@
 import { LogOut } from 'lucide-react';
 import type { HomeView } from '@/components/home/HomeSidebar';
 import SettingsMenu from '@/components/home/SettingsMenu';
+import { formatNexos, formatNexosFull } from '@/lib/nexos';
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
@@ -20,7 +21,7 @@ const NAV_LINKS: { label: TranslationKey; view?: HomeView }[] = [
 ];
 
 export default function HomeTopBar({ displayName, nexos, activeView, onNavigate, onSignOut, onOpenProfile }: HomeTopBarProps) {
-  const { t } = usePreferences();
+  const { t, language } = usePreferences();
 
   return (
     <header className="sticky top-0 z-20 bg-sky-700 text-white shadow-md shadow-sky-950/20">
@@ -60,7 +61,13 @@ export default function HomeTopBar({ displayName, nexos, activeView, onNavigate,
         <div className="ml-auto flex shrink-0 items-center gap-3 sm:gap-4">
           <div className="flex items-center gap-1.5 text-sm sm:gap-2">
             <span className="font-semibold">{t('nexos')}</span>
-            <span className="rounded-md bg-sky-800 px-2 py-0.5 font-mono text-sky-50">{nexos}</span>
+            <span
+              className="rounded-md bg-sky-800 px-2 py-0.5 font-mono text-sky-50"
+              title={formatNexosFull(nexos, language)}
+              data-testid="topbar-nexos"
+            >
+              {formatNexos(nexos, language)}
+            </span>
           </div>
           <SettingsMenu />
           <button
