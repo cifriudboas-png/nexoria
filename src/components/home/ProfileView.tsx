@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import CharacterViewer from '@/components/avatar/CharacterViewer';
 import type { CharacterLook } from '@/components/avatar/characterAppearances';
-import type { HairId, ShirtId } from '@/lib/avatar';
+import type { FaceId, HairId, ShirtId } from '@/lib/avatar';
 import { getProfileDetails, type ProfileDetails } from '@/lib/profile';
 import { usePreferences } from '@/lib/preferences-context';
 
