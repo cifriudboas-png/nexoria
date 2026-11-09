@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      friendships: {
+        Row: {
+          addressee_id: string
+          created_at: string
+          id: string
+          requester_id: string
+          responded_at: string | null
+          status: string
+        }
+        Insert: {
+          addressee_id: string
+          created_at?: string
+          id?: string
+          requester_id: string
+          responded_at?: string | null
+          status?: string
+        }
+        Update: {
+          addressee_id?: string
+          created_at?: string
+          id?: string
+          requester_id?: string
+          responded_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendships_addressee_id_fkey"
+            columns: ["addressee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friendships_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_items: {
         Row: {
           acquired_at: string
@@ -123,6 +165,20 @@ export type Database = {
         Returns: undefined
       }
       catalog_price: { Args: { _item: string }; Returns: number }
+      get_player_profile: {
+        Args: { _username: string }
+        Returns: {
+          account_number: number
+          created_at: string
+          equipped_face: string
+          equipped_hair: string
+          equipped_shirt: string
+          friend_count: number
+          friend_status: string
+          id: string
+          username: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -130,7 +186,49 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_friend_requests: {
+        Args: never
+        Returns: {
+          account_number: number
+          direction: string
+          equipped_face: string
+          equipped_hair: string
+          equipped_shirt: string
+          id: string
+          requested_at: string
+          username: string
+        }[]
+      }
+      list_friends: {
+        Args: never
+        Returns: {
+          account_number: number
+          equipped_face: string
+          equipped_hair: string
+          equipped_shirt: string
+          friends_since: string
+          id: string
+          username: string
+        }[]
+      }
       purchase_item: { Args: { _item: string }; Returns: undefined }
+      remove_friend: { Args: { _user_id: string }; Returns: undefined }
+      respond_friend_request: {
+        Args: { _accept: boolean; _user_id: string }
+        Returns: string
+      }
+      search_players: {
+        Args: { _query: string }
+        Returns: {
+          account_number: number
+          equipped_face: string
+          equipped_hair: string
+          equipped_shirt: string
+          id: string
+          username: string
+        }[]
+      }
+      send_friend_request: { Args: { _user_id: string }; Returns: string }
       set_equipped_face: { Args: { _face: string }; Returns: undefined }
       set_equipped_hair: { Args: { _hair: string }; Returns: undefined }
       set_equipped_shirt: { Args: { _shirt: string }; Returns: undefined }
