@@ -14,13 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      inventory_items: {
+        Row: {
+          acquired_at: string
+          id: string
+          item_id: string
+          user_id: string
+        }
+        Insert: {
+          acquired_at?: string
+          id?: string
+          item_id: string
+          user_id: string
+        }
+        Update: {
+          acquired_at?: string
+          id?: string
+          item_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          account_number: number
+          created_at: string
+          equipped_hair: string | null
+          equipped_shirt: string | null
+          id: string
+          nexos: number
+          username: string
+        }
+        Insert: {
+          account_number?: number
+          created_at?: string
+          equipped_hair?: string | null
+          equipped_shirt?: string | null
+          id: string
+          nexos?: number
+          username: string
+        }
+        Update: {
+          account_number?: number
+          created_at?: string
+          equipped_hair?: string | null
+          equipped_shirt?: string | null
+          id?: string
+          nexos?: number
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      catalog_price: { Args: { _item: string }; Returns: number }
+      purchase_item: { Args: { _item: string }; Returns: undefined }
+      set_equipped_hair: { Args: { _hair: string }; Returns: undefined }
+      set_equipped_shirt: { Args: { _shirt: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
