@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canAfford, FACE_ITEMS, formatItemDate, HAIR_ITEMS } from '@/lib/avatar';
+import { ACCESSORY_ITEMS, canAfford, FACE_ITEMS, formatItemDate, HAIR_ITEMS } from '@/lib/avatar';
 
 describe('catalog hair items', () => {
   const hair = HAIR_ITEMS.find((item) => item.id === 'cool_blond_hair')!;
@@ -38,5 +38,24 @@ describe('catalog face items', () => {
     expect(face.categories).toContain('body');
     expect(face.categories).toContain('body-faces');
     expect(face.categories.some((category) => category.startsWith('featured'))).toBe(false);
+  });
+});
+
+describe('catalog accessory items', () => {
+  const city = ACCESSORY_ITEMS.find((item) => item.id === 'city_head')!;
+
+  it('"Cabeça de cidade" costs 17 Nexos', () => {
+    expect(city.priceNexos).toBe(17);
+  });
+
+  it('a player with 16 Nexos cannot buy "Cabeça de cidade", one with 17 can', () => {
+    expect(canAfford(city, 16)).toBe(false);
+    expect(canAfford(city, 17)).toBe(true);
+  });
+
+  it('"Cabeça de cidade" is listed under Accessories and in Featured accessories', () => {
+    expect(city.categories).toContain('accessories');
+    expect(city.categories).toContain('featured');
+    expect(city.categories).toContain('featured-accessories');
   });
 });

@@ -17,11 +17,9 @@ import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
 function CatalogThumbnail({ item, look }: { item: CatalogItem; look: CharacterLook }) {
-  return item.kind === 'face' ? (
-    <ItemThumbnail kind="face" id={item.id} look={look} />
-  ) : (
-    <ItemThumbnail kind="hair" id={item.id} look={look} />
-  );
+  if (item.kind === 'face') return <ItemThumbnail kind="face" id={item.id} look={look} />;
+  if (item.kind === 'accessory') return <ItemThumbnail kind="accessory" id={item.id} look={look} />;
+  return <ItemThumbnail kind="hair" id={item.id} look={look} />;
 }
 
 function normalizeSearch(text: string): string {

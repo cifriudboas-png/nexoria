@@ -1,4 +1,4 @@
-import { isFaceId, isHairId, isShirtId, type FaceId, type HairId, type ShirtId } from '@/lib/avatar';
+import { isAccessoryId, isFaceId, isHairId, isShirtId, type AccessoryId, type FaceId, type HairId, type ShirtId } from '@/lib/avatar';
 import { supabase } from '@/lib/supabase';
 import type { TranslationKey } from '@/lib/translations';
 
@@ -12,6 +12,7 @@ export type PlayerSummary = {
   shirt: ShirtId | null;
   hair: HairId | null;
   face: FaceId | null;
+  accessory: AccessoryId | null;
 };
 
 export type PlayerProfile = PlayerSummary & {
@@ -44,6 +45,7 @@ type PlayerRow = {
   equipped_shirt: string | null;
   equipped_hair: string | null;
   equipped_face: string | null;
+  equipped_accessory?: string | null;
 };
 
 function toSummary(row: PlayerRow): PlayerSummary {
@@ -54,6 +56,7 @@ function toSummary(row: PlayerRow): PlayerSummary {
     shirt: isShirtId(row.equipped_shirt) ? row.equipped_shirt : null,
     hair: isHairId(row.equipped_hair) ? row.equipped_hair : null,
     face: isFaceId(row.equipped_face) ? row.equipped_face : null,
+    accessory: isAccessoryId(row.equipped_accessory) ? row.equipped_accessory : null,
   };
 }
 

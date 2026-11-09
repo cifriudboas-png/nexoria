@@ -10,3 +10,5 @@
 - [x] Catalog item info window (name, price, description, creation date) on photo click
 - [x] New catalog face item "Sorriso confiante" (5 Nexos), buy/wear/save
 - [x] Friends system: send/accept/decline requests, home friends row with "Ver todos", Friends tab, other players profiles
+- [x] Delete every account except NEXORIA (#1) and reset account numbers
+- [x] Catalog accessory "Cabeça de cidade" (17 Nexos), mini city on top of the head, in Acessórios + Destaques
