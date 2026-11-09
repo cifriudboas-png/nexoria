@@ -29,6 +29,13 @@
       "when": 1794265958847,
       "tag": "0003_friends_system",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794266871149,
+      "tag": "0004_city_head_accessory_item",
+      "breakpoints": true
     }
   ]
 }

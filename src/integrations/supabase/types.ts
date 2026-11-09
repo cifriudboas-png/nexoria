@@ -90,6 +90,7 @@ export type Database = {
           account_number: number
           banned_at: string | null
           created_at: string
+          equipped_accessory: string | null
           equipped_face: string | null
           equipped_hair: string | null
           equipped_shirt: string | null
@@ -101,6 +102,7 @@ export type Database = {
           account_number?: number
           banned_at?: string | null
           created_at?: string
+          equipped_accessory?: string | null
           equipped_face?: string | null
           equipped_hair?: string | null
           equipped_shirt?: string | null
@@ -112,6 +114,7 @@ export type Database = {
           account_number?: number
           banned_at?: string | null
           created_at?: string
+          equipped_accessory?: string | null
           equipped_face?: string | null
           equipped_hair?: string | null
           equipped_shirt?: string | null
@@ -170,6 +173,7 @@ export type Database = {
         Returns: {
           account_number: number
           created_at: string
+          equipped_accessory: string
           equipped_face: string
           equipped_hair: string
           equipped_shirt: string
@@ -191,6 +195,7 @@ export type Database = {
         Returns: {
           account_number: number
           direction: string
+          equipped_accessory: string
           equipped_face: string
           equipped_hair: string
           equipped_shirt: string
@@ -203,6 +208,7 @@ export type Database = {
         Args: never
         Returns: {
           account_number: number
+          equipped_accessory: string
           equipped_face: string
           equipped_hair: string
           equipped_shirt: string
@@ -221,6 +227,7 @@ export type Database = {
         Args: { _query: string }
         Returns: {
           account_number: number
+          equipped_accessory: string
           equipped_face: string
           equipped_hair: string
           equipped_shirt: string
@@ -229,6 +236,10 @@ export type Database = {
         }[]
       }
       send_friend_request: { Args: { _user_id: string }; Returns: string }
+      set_equipped_accessory: {
+        Args: { _accessory: string }
+        Returns: undefined
+      }
       set_equipped_face: { Args: { _face: string }; Returns: undefined }
       set_equipped_hair: { Args: { _hair: string }; Returns: undefined }
       set_equipped_shirt: { Args: { _shirt: string }; Returns: undefined }
