@@ -35,7 +35,7 @@ type CharacterViewerProps = {
   hair?: HairId | null;
   face?: FaceId | null;
   accessory?: AccessoryId | null;
-  bodyColors?: BodyColors;
+  bodyColors?: BodyColors | undefined;
   /** Fixed turn angle in degrees; when set, the character stays still at this angle. */
   fixedYaw?: number | null;
 };

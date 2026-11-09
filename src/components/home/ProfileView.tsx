@@ -14,7 +14,7 @@ type ProfileViewProps = {
   hair: HairId | null;
   face?: FaceId | null;
   accessory?: AccessoryId | null;
-  bodyColors?: BodyColors;
+  bodyColors?: BodyColors | undefined;
 };
 
 type DetailsStatus = 'loading' | 'ready' | 'error';
