@@ -7,6 +7,7 @@ import {
   MessageSquare,
   Package,
   Shirt,
+  ShieldCheck,
   Sparkles,
   User,
   Users,
@@ -15,7 +16,7 @@ import {
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
-export type HomeView = 'home' | 'profile' | 'catalog' | 'avatar' | 'inventory';
+export type HomeView = 'home' | 'profile' | 'catalog' | 'avatar' | 'inventory' | 'admin';
 
 type SidebarItem = {
   label: TranslationKey;
@@ -36,14 +37,19 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: 'menuForums', icon: MessagesSquare },
 ];
 
+const ADMIN_ITEM: SidebarItem = { label: 'menuAdmin', icon: ShieldCheck, view: 'admin' };
+
 type HomeSidebarProps = {
   displayName: string;
   activeView: HomeView;
   onNavigate: (view: HomeView) => void;
+  /** Only the NEXORIA admin account sees the Admin entry. */
+  isAdmin?: boolean;
 };
 
-export default function HomeSidebar({ displayName, activeView, onNavigate }: HomeSidebarProps) {
+export default function HomeSidebar({ displayName, activeView, onNavigate, isAdmin = false }: HomeSidebarProps) {
   const { t } = usePreferences();
+  const items = isAdmin ? [...SIDEBAR_ITEMS, ADMIN_ITEM] : SIDEBAR_ITEMS;
 
   return (
     <aside className="flex w-full flex-col border-b border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900 md:sticky md:top-14 md:h-[calc(100vh-3.5rem)] md:w-60 md:shrink-0 md:border-b-0 md:border-r">
@@ -55,7 +61,7 @@ export default function HomeSidebar({ displayName, activeView, onNavigate }: Hom
         className="flex gap-1 overflow-x-auto px-3 py-2 md:flex-1 md:flex-col md:gap-0.5 md:overflow-y-auto md:overflow-x-visible md:py-4"
         aria-label={t('menuLabel')}
       >
-        {SIDEBAR_ITEMS.map(({ label, icon: Icon, view }) => {
+        {items.map(({ label, icon: Icon, view }) => {
           const isActive = view !== undefined && view === activeView;
           return (
             <button

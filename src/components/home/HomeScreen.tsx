@@ -13,6 +13,8 @@ import {
   type ShirtId,
 } from '@/lib/avatar';
 import InventoryView from '@/components/home/InventoryView';
+import AdminView from '@/components/home/AdminView';
+import { isCurrentUserAdmin } from '@/lib/admin';
 import type { CharacterLook } from '@/components/avatar/characterAppearances';
 import ExperienceCard from '@/components/home/ExperienceCard';
 import HomeSidebar, { type HomeView } from '@/components/home/HomeSidebar';
@@ -45,10 +47,16 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
   const [nexos, setNexos] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [saveFailed, setSaveFailed] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (isGuest) return;
     let isActive = true;
+    isCurrentUserAdmin()
+      .then((admin) => {
+        if (isActive) setIsAdmin(admin);
+      })
+      .catch(() => undefined);
     getAvatarState()
       .then((state) => {
         if (!isActive) return;
@@ -118,10 +126,12 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
       />
 
       <div className="flex flex-1 flex-col md:flex-row md:items-start">
-        <HomeSidebar displayName={displayName} activeView={view} onNavigate={setView} />
+        <HomeSidebar displayName={displayName} activeView={view} onNavigate={setView} isAdmin={isAdmin} />
 
         <main className="min-w-0 flex-1 px-4 pb-12 pt-8 sm:px-8 lg:px-12">
-          {view === 'avatar' ? (
+          {view === 'admin' && isAdmin ? (
+            <AdminView currentUsername={displayName} onOwnNexosChange={setNexos} />
+          ) : view === 'avatar' ? (
             <AvatarEditorView
               look={look}
               equippedShirt={equippedShirt}

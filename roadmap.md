@@ -4,3 +4,4 @@
 - [x] Purchase system: buying in the catalog adds the item to the player's inventory; Inventory page lists owned items; avatar editor only offers owned items
 - [x] Remove the fringe from "Cabelo maneiro loiro"
 - [x] Move "Cabelo maneiro loiro" to the "Corpo" category (avatar editor) / "Partes do corpo" (catalog)
+- [x] Rebuild NEXORIA-only Admin panel: player list, give/take Nexos, ban/unban
