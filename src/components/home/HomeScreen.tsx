@@ -5,10 +5,13 @@ import AvatarEditorView from '@/components/home/AvatarEditorView';
 import CatalogView from '@/components/home/CatalogView';
 import {
   getAvatarState,
-  getHairItem,
+  getCatalogItem,
   purchaseItem,
+  saveEquippedFace,
   saveEquippedHair,
   saveEquippedShirt,
+  type CatalogItemId,
+  type FaceId,
   type HairId,
   type ShirtId,
 } from '@/lib/avatar';
@@ -44,6 +47,8 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
   const [equippedShirt, setEquippedShirt] = useState<ShirtId | null>(isGuest ? 'nexoria_logo' : null);
   const [equippedHair, setEquippedHair] = useState<HairId | null>(null);
   const [ownedHair, setOwnedHair] = useState<HairId[]>([]);
+  const [equippedFace, setEquippedFace] = useState<FaceId | null>(null);
+  const [ownedFaces, setOwnedFaces] = useState<FaceId[]>([]);
   const [nexos, setNexos] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [saveFailed, setSaveFailed] = useState(false);
@@ -63,6 +68,8 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
         setEquippedShirt(state.shirt);
         setEquippedHair(state.hair);
         setOwnedHair(state.ownedHair);
+        setEquippedFace(state.face);
+        setOwnedFaces(state.ownedFaces);
         setNexos(state.nexos);
       })
       .catch(() => undefined);
@@ -104,13 +111,38 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
     }
   };
 
-  const handlePurchase = async (hair: HairId) => {
-    if (isGuest) throw new Error('Guests cannot buy items');
-    const price = getHairItem(hair)?.priceNexos ?? 0;
-    await purchaseItem(hair);
-    setOwnedHair((current) => (current.includes(hair) ? current : [...current, hair]));
-    setNexos((current) => current - price);
+  const handleEquipFace = async (face: FaceId | null) => {
+    if (isGuest) return;
+    const previous = equippedFace;
+    setEquippedFace(face);
+    setSaveFailed(false);
+    setIsSaving(true);
+    try {
+      await saveEquippedFace(face);
+    } catch {
+      setEquippedFace(previous);
+      setSaveFailed(true);
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  const handlePurchase = async (itemId: CatalogItemId) => {
+    if (isGuest) throw new Error('Guests cannot buy items');
+    const item = getCatalogItem(itemId);
+    if (!item) throw new Error('Unknown item');
+    await purchaseItem(itemId);
+    if (item.kind === 'face') {
+      const face = item.id;
+      setOwnedFaces((current) => (current.includes(face) ? current : [...current, face]));
+    } else {
+      const hair = item.id;
+      setOwnedHair((current) => (current.includes(hair) ? current : [...current, hair]));
+    }
+    setNexos((current) => current - item.priceNexos);
+  };
+
+  const ownedItems: CatalogItemId[] = [...ownedHair, ...ownedFaces];
 
   const openProfile = () => setView('profile');
 
@@ -136,12 +168,15 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
               look={look}
               equippedShirt={equippedShirt}
               equippedHair={equippedHair}
+              equippedFace={equippedFace}
               ownedHair={ownedHair}
+              ownedFaces={ownedFaces}
               isLocked={isGuest}
               isSaving={isSaving}
               saveFailed={saveFailed}
               onEquipShirt={handleEquipShirt}
               onEquipHair={handleEquipHair}
+              onEquipFace={handleEquipFace}
               onOpenCatalog={() => setView('catalog')}
             />
           ) : view === 'catalog' ? (
@@ -149,7 +184,7 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
               look={look}
               isLocked={isGuest}
               nexos={nexos}
-              ownedHair={ownedHair}
+              ownedItems={ownedItems}
               onPurchase={handlePurchase}
               onOpenInventory={() => setView('inventory')}
             />
@@ -158,16 +193,19 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
               look={look}
               isLocked={isGuest}
               ownedHair={ownedHair}
+              ownedFaces={ownedFaces}
               equippedShirt={equippedShirt}
               equippedHair={equippedHair}
+              equippedFace={equippedFace}
               isSaving={isSaving}
               saveFailed={saveFailed}
               onEquipShirt={handleEquipShirt}
               onEquipHair={handleEquipHair}
+              onEquipFace={handleEquipFace}
               onOpenCatalog={() => setView('catalog')}
             />
           ) : view === 'profile' ? (
-            <ProfileView displayName={displayName} look={look} isGuest={isGuest} shirt={equippedShirt} hair={equippedHair} />
+            <ProfileView displayName={displayName} look={look} isGuest={isGuest} shirt={equippedShirt} hair={equippedHair} face={equippedFace} />
           ) : (
             <>
               <section className="flex items-end gap-6">
@@ -177,7 +215,7 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
                   aria-label={t('openProfile')}
                   className="relative h-24 w-24 shrink-0 cursor-pointer rounded-full border-4 border-white bg-gradient-to-br from-sky-300 to-sky-500 shadow-lg transition-transform duration-300 hover:scale-105 focus:outline-none focus-visible:ring-4 focus-visible:ring-sky-300 dark:border-stone-800 sm:h-32 sm:w-32"
                 >
-                  <CharacterViewer className="h-full w-full rounded-full" framing="bust" look={look} shirt={equippedShirt} hair={equippedHair} />
+                  <CharacterViewer className="h-full w-full rounded-full" framing="bust" look={look} shirt={equippedShirt} hair={equippedHair} face={equippedFace} />
                 </button>
                 <h1 className="pb-2 text-4xl font-black leading-tight tracking-tight text-stone-900 dark:text-stone-100 sm:text-6xl">
                   {t('greetingPrefix')}
