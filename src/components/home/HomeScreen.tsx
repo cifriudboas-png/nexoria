@@ -23,6 +23,9 @@ import ExperienceCard from '@/components/home/ExperienceCard';
 import HomeSidebar, { type HomeView } from '@/components/home/HomeSidebar';
 import HomeTopBar from '@/components/home/HomeTopBar';
 import ProfileView from '@/components/home/ProfileView';
+import PlayerProfileView from '@/components/home/PlayerProfileView';
+import FriendsView from '@/components/home/FriendsView';
+import HomeFriendsSection from '@/components/home/HomeFriendsSection';
 import type { Account } from '@/lib/account';
 import { usePreferences } from '@/lib/preferences-context';
 
@@ -42,7 +45,17 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
   const { t } = usePreferences();
   const { displayName, isGuest } = account;
   const look: CharacterLook = isGuest ? 'guest' : 'starter';
-  const [view, setView] = useState<HomeView>('home');
+  const [view, setViewState] = useState<HomeView>('home');
+  // Username of another player whose profile is open; null shows your own profile.
+  const [viewedPlayer, setViewedPlayer] = useState<string | null>(null);
+  const setView = (next: HomeView) => {
+    setViewedPlayer(null);
+    setViewState(next);
+  };
+  const openPlayer = (username: string) => {
+    setViewedPlayer(username.toLowerCase() === displayName.toLowerCase() ? null : username);
+    setViewState('profile');
+  };
   // Guests keep the logo print they always had; it is not saved for them.
   const [equippedShirt, setEquippedShirt] = useState<ShirtId | null>(isGuest ? 'nexoria_logo' : null);
   const [equippedHair, setEquippedHair] = useState<HairId | null>(null);
@@ -204,6 +217,10 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
               onEquipFace={handleEquipFace}
               onOpenCatalog={() => setView('catalog')}
             />
+          ) : view === 'friends' ? (
+            <FriendsView isGuest={isGuest} currentUsername={displayName} onOpenPlayer={openPlayer} />
+          ) : view === 'profile' && viewedPlayer ? (
+            <PlayerProfileView key={viewedPlayer} username={viewedPlayer} isGuest={isGuest} />
           ) : view === 'profile' ? (
             <ProfileView displayName={displayName} look={look} isGuest={isGuest} shirt={equippedShirt} hair={equippedHair} face={equippedFace} />
           ) : (
@@ -229,6 +246,8 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
                   {t('greetingSuffix')}
                 </h1>
               </section>
+
+              {!isGuest && <HomeFriendsSection onOpenPlayer={openPlayer} onSeeAll={() => setView('friends')} />}
 
               <section className="mt-10">
                 <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100">{t('continueSection')}</h2>
