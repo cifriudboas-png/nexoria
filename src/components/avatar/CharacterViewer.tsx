@@ -3,18 +3,21 @@ import CharacterModel from '@/components/avatar/CharacterModel';
 import { CHARACTER_APPEARANCES, type CharacterLook } from '@/components/avatar/characterAppearances';
 import { getShirtItem, type AccessoryId, type FaceId, type HairId, type ShirtId } from '@/lib/avatar';
 
-type Framing = 'bust' | 'full' | 'head';
+type Framing = 'bust' | 'full' | 'head' | 'accessory';
 
 const FRAMING_TRANSFORM: Record<Framing, string> = {
   bust: 'translateY(18px) scale(0.95)',
   full: 'translateY(4px) scale(2.2)',
   head: 'translateY(100px) scale(1.55)',
+  // Centers on the space above the head, where hats and other accessories sit.
+  accessory: 'translateY(88px) scale(1.3)',
 };
 
 const FRAMING_PERSPECTIVE: Record<Framing, string> = {
   bust: '500px',
   full: '1000px',
   head: '600px',
+  accessory: '600px',
 };
 
 const INITIAL_YAW = 25;
