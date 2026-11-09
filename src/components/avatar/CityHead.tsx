@@ -58,9 +58,9 @@ export default function CityHead() {
       <CharacterBlock x={0} y={BASE_TOP + 2} z={0} w={46} h={4} d={38} color={ROAD} />
 
       {/* Tall tower in the middle */}
-      <CharacterBlock x={3} y={BASE_TOP - 15} z={-2} w={13} h={30} d={12} color={TOWER} front={<TowerFront columns={2} rows={3} doubleDoor />} />
+      <CharacterBlock x={3} y={BASE_TOP - 12} z={-2} w={13} h={24} d={12} color={TOWER} front={<TowerFront columns={2} rows={3} doubleDoor />} />
       {/* Shorter tower to its left */}
-      <CharacterBlock x={-8} y={BASE_TOP - 11} z={-4} w={10} h={22} d={10} color={TOWER} front={<TowerFront columns={2} rows={2} />} />
+      <CharacterBlock x={-8} y={BASE_TOP - 8.5} z={-4} w={10} h={17} d={10} color={TOWER} front={<TowerFront columns={2} rows={2} />} />
 
       {/* Left house with a red-orange roof */}
       <CharacterBlock x={-17} y={BASE_TOP - 4} z={6} w={9} h={8} d={8} color={WALL} front={<HouseFront />} />
@@ -71,10 +71,10 @@ export default function CityHead() {
       <CharacterSpike x={14} y={BASE_TOP - 9} z={6} base={12} height={7} color="#ff8a00" />
 
       {/* Tree behind the right house */}
-      <CharacterBlock x={18} y={BASE_TOP - 9} z={-6} w={4} h={18} d={4} color={TRUNK} />
-      <CharacterBlock x={18} y={BASE_TOP - 23} z={-6} w={13} h={10} d={12} color={LEAVES} />
-      <CharacterBlock x={15} y={BASE_TOP - 28} z={-6} w={8} h={6} d={9} color={LEAVES} />
-      <CharacterBlock x={21} y={BASE_TOP - 19} z={-5} w={7} h={7} d={9} color={LEAVES} />
+      <CharacterBlock x={18} y={BASE_TOP - 7} z={-6} w={4} h={14} d={4} color={TRUNK} />
+      <CharacterBlock x={18} y={BASE_TOP - 18} z={-6} w={13} h={9} d={12} color={LEAVES} />
+      <CharacterBlock x={15} y={BASE_TOP - 22} z={-6} w={8} h={5} d={9} color={LEAVES} />
+      <CharacterBlock x={21} y={BASE_TOP - 15} z={-5} w={7} h={6} d={9} color={LEAVES} />
     </>
   );
 }
