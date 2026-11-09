@@ -34,7 +34,9 @@ describe('catalog face items', () => {
     expect(canAfford(face, 5)).toBe(true);
   });
 
-  it('"Sorriso confiante" is listed under Faces in the catalog', () => {
+  it('"Sorriso confiante" is listed only under Body parts (Faces), not Featured', () => {
+    expect(face.categories).toContain('body');
     expect(face.categories).toContain('body-faces');
+    expect(face.categories.some((category) => category.startsWith('featured'))).toBe(false);
   });
 });
