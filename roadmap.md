@@ -8,3 +8,4 @@
 - [x] Delete the "kyle" account
 - [x] Abbreviate Nexos amounts (1000 → 1K, then M, B, T)
 - [x] Catalog item info window (name, price, description, creation date) on photo click
+- [x] New catalog face item "Sorriso confiante" (5 Nexos), buy/wear/save
