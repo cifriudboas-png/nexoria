@@ -152,4 +152,10 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+
+  /* Imported NEXORIA app was built on Tailwind v3, where enabled buttons show a pointer. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 }

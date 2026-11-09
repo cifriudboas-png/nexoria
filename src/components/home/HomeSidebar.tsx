@@ -1,0 +1,103 @@
+import type { LucideIcon } from 'lucide-react';
+import {
+  ArrowLeftRight,
+  Home,
+  Megaphone,
+  MessagesSquare,
+  MessageSquare,
+  Package,
+  Shirt,
+  Sparkles,
+  User,
+  Users,
+  UsersRound,
+} from 'lucide-react';
+import { usePreferences } from '@/lib/preferences-context';
+import type { TranslationKey } from '@/lib/translations';
+
+export type HomeView = 'home' | 'profile' | 'catalog' | 'avatar' | 'inventory';
+
+type SidebarItem = {
+  label: TranslationKey;
+  icon: LucideIcon;
+  view?: HomeView;
+};
+
+const SIDEBAR_ITEMS: SidebarItem[] = [
+  { label: 'menuHome', icon: Home, view: 'home' },
+  { label: 'menuProfile', icon: User, view: 'profile' },
+  { label: 'menuMessages', icon: MessageSquare },
+  { label: 'menuFriends', icon: Users },
+  { label: 'menuAvatar', icon: Shirt, view: 'avatar' },
+  { label: 'menuInventory', icon: Package, view: 'inventory' },
+  { label: 'menuTrades', icon: ArrowLeftRight },
+  { label: 'menuGroups', icon: UsersRound },
+  { label: 'menuBlog', icon: Megaphone },
+  { label: 'menuForums', icon: MessagesSquare },
+];
+
+type HomeSidebarProps = {
+  displayName: string;
+  activeView: HomeView;
+  onNavigate: (view: HomeView) => void;
+};
+
+export default function HomeSidebar({ displayName, activeView, onNavigate }: HomeSidebarProps) {
+  const { t } = usePreferences();
+
+  return (
+    <aside className="flex w-full flex-col border-b border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900 md:sticky md:top-14 md:h-[calc(100vh-3.5rem)] md:w-60 md:shrink-0 md:border-b-0 md:border-r">
+      <div className="hidden border-b border-stone-200 px-5 py-4 dark:border-stone-800 md:block">
+        <p className="truncate text-sm font-semibold text-stone-800 dark:text-stone-100">{displayName}</p>
+      </div>
+
+      <nav
+        className="flex gap-1 overflow-x-auto px-3 py-2 md:flex-1 md:flex-col md:gap-0.5 md:overflow-y-auto md:overflow-x-visible md:py-4"
+        aria-label={t('menuLabel')}
+      >
+        {SIDEBAR_ITEMS.map(({ label, icon: Icon, view }) => {
+          const isActive = view !== undefined && view === activeView;
+          return (
+            <button
+              key={label}
+              type="button"
+              aria-current={isActive ? 'page' : undefined}
+              disabled={!view}
+              onClick={view ? () => onNavigate(view) : undefined}
+              title={view ? undefined : t('comingSoon')}
+              className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors duration-200 md:gap-3 md:py-2.5 ${
+                isActive
+                  ? 'bg-sky-50 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300'
+                  : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-stone-600 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-100 dark:disabled:hover:bg-transparent dark:disabled:hover:text-stone-400'
+              }`}
+            >
+              <Icon className="h-5 w-5" />
+              {t(label)}
+            </button>
+          );
+        })}
+        <button
+          type="button"
+          disabled
+          title={t('comingSoon')}
+          className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-sky-700 px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-80 md:hidden"
+        >
+          <Sparkles className="h-4 w-4" />
+          {t('premium')}
+        </button>
+      </nav>
+
+      <div className="hidden p-4 md:block">
+        <button
+          type="button"
+          disabled
+          title={t('comingSoon')}
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-80 disabled:hover:bg-sky-700"
+        >
+          <Sparkles className="h-4 w-4" />
+          {t('premium')}
+        </button>
+      </div>
+    </aside>
+  );
+}
