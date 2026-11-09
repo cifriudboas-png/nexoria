@@ -3,6 +3,7 @@ import HomeScreen from '@/components/home/HomeScreen';
 import SignupScreen from '@/components/SignupScreen';
 import { getCurrentUsername, signOutUser } from '@/lib/auth';
 import type { Account } from '@/lib/account';
+import { isCurrentUserBanned } from '@/lib/admin';
 
 function App() {
   const [account, setAccount] = useState<Account | null>(null);
@@ -12,6 +13,14 @@ function App() {
     let isActive = true;
     getCurrentUsername()
       .catch(() => null)
+      .then(async (username) => {
+        // A player banned while signed in is signed out on the next visit.
+        if (username && (await isCurrentUserBanned().catch(() => false))) {
+          await signOutUser();
+          return null;
+        }
+        return username;
+      })
       .then((username) => {
         if (!isActive) return;
         setAccount(username ? { displayName: username, isGuest: false } : null);

@@ -126,6 +126,9 @@ export async function signInWithUsername(
     if (error.message.toLowerCase().includes('invalid login credentials')) {
       throw new AuthError('invalidCredentials');
     }
+    if (error.code === 'user_banned' || error.message.toLowerCase().includes('banned')) {
+      throw new AuthError('accountBanned');
+    }
     throw new AuthError('genericError');
   }
 
