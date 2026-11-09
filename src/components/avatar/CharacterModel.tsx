@@ -1,0 +1,46 @@
+import CharacterBlock from '@/components/avatar/CharacterBlock';
+import type { CharacterAppearance } from '@/components/avatar/characterAppearances';
+import CoolBlondHair from '@/components/avatar/CoolBlondHair';
+import type { HairId } from '@/lib/avatar';
+
+const HEAD_SIZE = 40;
+const TORSO = { w: 40, h: 40, d: 20 };
+const LIMB = { w: 20, h: 40, d: 20 };
+
+function HappyFace() {
+  return (
+    <svg viewBox="0 0 40 40" className="h-full w-full" aria-hidden="true">
+      <ellipse cx="13" cy="16" rx="2.6" ry="3.6" fill="#2b1d00" />
+      <ellipse cx="27" cy="16" rx="2.6" ry="3.6" fill="#2b1d00" />
+      <path d="M11.5 24 Q20 33 28.5 24" fill="none" stroke="#2b1d00" strokeWidth="2.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+type CharacterModelProps = {
+  appearance: CharacterAppearance;
+  shirtImageUrl?: string | null;
+  hair?: HairId | null;
+};
+
+export default function CharacterModel({ appearance, shirtImageUrl, hair = null }: CharacterModelProps) {
+  const torsoFront = shirtImageUrl ? (
+    <img src={shirtImageUrl} alt="" draggable={false} className="h-8 w-8 object-contain" />
+  ) : null;
+  const shoulderX = TORSO.w / 2 + LIMB.w / 2;
+  const hipX = TORSO.w / 4;
+  const hipY = TORSO.h / 2 + LIMB.h / 2;
+  const headY = -(TORSO.h / 2 + HEAD_SIZE / 2);
+
+  return (
+    <>
+      <CharacterBlock x={0} y={headY} w={HEAD_SIZE} h={HEAD_SIZE} d={HEAD_SIZE} color={appearance.skin} front={<HappyFace />} />
+      <CharacterBlock x={0} y={0} w={TORSO.w} h={TORSO.h} d={TORSO.d} color={appearance.shirt} front={torsoFront} />
+      <CharacterBlock x={-shoulderX} y={0} w={LIMB.w} h={LIMB.h} d={LIMB.d} color={appearance.sleeve} />
+      <CharacterBlock x={shoulderX} y={0} w={LIMB.w} h={LIMB.h} d={LIMB.d} color={appearance.sleeve} />
+      <CharacterBlock x={-hipX} y={hipY} w={LIMB.w} h={LIMB.h} d={LIMB.d} color={appearance.pants} />
+      <CharacterBlock x={hipX} y={hipY} w={LIMB.w} h={LIMB.h} d={LIMB.d} color={appearance.pants} />
+      {hair === 'cool_blond_hair' && <CoolBlondHair />}
+    </>
+  );
+}
