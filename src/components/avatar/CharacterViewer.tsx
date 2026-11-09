@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import CharacterModel from '@/components/avatar/CharacterModel';
 import { CHARACTER_APPEARANCES, type CharacterLook } from '@/components/avatar/characterAppearances';
-import { getShirtItem, type FaceId, type HairId, type ShirtId } from '@/lib/avatar';
+import { getShirtItem, type AccessoryId, type FaceId, type HairId, type ShirtId } from '@/lib/avatar';
 
 type Framing = 'bust' | 'full' | 'head';
 
@@ -29,6 +29,7 @@ type CharacterViewerProps = {
   shirt?: ShirtId | null;
   hair?: HairId | null;
   face?: FaceId | null;
+  accessory?: AccessoryId | null;
   /** Fixed turn angle in degrees; when set, the character stays still at this angle. */
   fixedYaw?: number | null;
 };
@@ -41,6 +42,7 @@ export default function CharacterViewer({
   shirt = null,
   hair = null,
   face = null,
+  accessory = null,
   fixedYaw = null,
 }: CharacterViewerProps) {
 
@@ -121,7 +123,7 @@ export default function CharacterViewer({
         className="absolute left-1/2 top-1/2 h-0 w-0"
         style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
       >
-        <CharacterModel appearance={CHARACTER_APPEARANCES[look]} shirtImageUrl={getShirtItem(shirt)?.imageUrl ?? null} hair={hair} face={face} />
+        <CharacterModel appearance={CHARACTER_APPEARANCES[look]} shirtImageUrl={getShirtItem(shirt)?.imageUrl ?? null} hair={hair} face={face} accessory={accessory} />
       </div>
     </div>
   );
