@@ -1,7 +1,8 @@
 import CharacterBlock from '@/components/avatar/CharacterBlock';
 import type { CharacterAppearance } from '@/components/avatar/characterAppearances';
+import ConfidentSmileFace from '@/components/avatar/ConfidentSmileFace';
 import CoolBlondHair from '@/components/avatar/CoolBlondHair';
-import type { HairId } from '@/lib/avatar';
+import type { FaceId, HairId } from '@/lib/avatar';
 
 const HEAD_SIZE = 40;
 const TORSO = { w: 40, h: 40, d: 20 };
@@ -21,9 +22,11 @@ type CharacterModelProps = {
   appearance: CharacterAppearance;
   shirtImageUrl?: string | null;
   hair?: HairId | null;
+  face?: FaceId | null;
 };
 
-export default function CharacterModel({ appearance, shirtImageUrl, hair = null }: CharacterModelProps) {
+export default function CharacterModel({ appearance, shirtImageUrl, hair = null, face = null }: CharacterModelProps) {
+  const headFront = face === 'confident_smile' ? <ConfidentSmileFace /> : <HappyFace />;
   const torsoFront = shirtImageUrl ? (
     <img src={shirtImageUrl} alt="" draggable={false} className="h-8 w-8 object-contain" />
   ) : null;
@@ -34,7 +37,7 @@ export default function CharacterModel({ appearance, shirtImageUrl, hair = null 
 
   return (
     <>
-      <CharacterBlock x={0} y={headY} w={HEAD_SIZE} h={HEAD_SIZE} d={HEAD_SIZE} color={appearance.skin} front={<HappyFace />} />
+      <CharacterBlock x={0} y={headY} w={HEAD_SIZE} h={HEAD_SIZE} d={HEAD_SIZE} color={appearance.skin} front={headFront} />
       <CharacterBlock x={0} y={0} w={TORSO.w} h={TORSO.h} d={TORSO.d} color={appearance.shirt} front={torsoFront} />
       <CharacterBlock x={-shoulderX} y={0} w={LIMB.w} h={LIMB.h} d={LIMB.d} color={appearance.sleeve} />
       <CharacterBlock x={shoulderX} y={0} w={LIMB.w} h={LIMB.h} d={LIMB.d} color={appearance.sleeve} />

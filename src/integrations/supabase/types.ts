@@ -48,6 +48,7 @@ export type Database = {
           account_number: number
           banned_at: string | null
           created_at: string
+          equipped_face: string | null
           equipped_hair: string | null
           equipped_shirt: string | null
           id: string
@@ -58,6 +59,7 @@ export type Database = {
           account_number?: number
           banned_at?: string | null
           created_at?: string
+          equipped_face?: string | null
           equipped_hair?: string | null
           equipped_shirt?: string | null
           id: string
@@ -68,6 +70,7 @@ export type Database = {
           account_number?: number
           banned_at?: string | null
           created_at?: string
+          equipped_face?: string | null
           equipped_hair?: string | null
           equipped_shirt?: string | null
           id?: string
@@ -128,6 +131,7 @@ export type Database = {
         Returns: boolean
       }
       purchase_item: { Args: { _item: string }; Returns: undefined }
+      set_equipped_face: { Args: { _face: string }; Returns: undefined }
       set_equipped_hair: { Args: { _hair: string }; Returns: undefined }
       set_equipped_shirt: { Args: { _shirt: string }; Returns: undefined }
     }

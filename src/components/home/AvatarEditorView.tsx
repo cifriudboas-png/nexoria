@@ -4,7 +4,7 @@ import GuestLockedNotice from '@/components/home/GuestLockedNotice';
 import ItemThumbnail from '@/components/home/ItemThumbnail';
 import CharacterViewer from '@/components/avatar/CharacterViewer';
 import type { CharacterLook } from '@/components/avatar/characterAppearances';
-import { HAIR_ITEMS, SHIRT_ITEMS, type HairId, type ShirtId } from '@/lib/avatar';
+import { FACE_ITEMS, HAIR_ITEMS, SHIRT_ITEMS, type FaceId, type HairId, type ShirtId } from '@/lib/avatar';
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
@@ -24,19 +24,22 @@ type AvatarEditorViewProps = {
   look: CharacterLook;
   equippedShirt: ShirtId | null;
   equippedHair: HairId | null;
+  equippedFace: FaceId | null;
   ownedHair: HairId[];
+  ownedFaces: FaceId[];
   /** Guests can look but not change their character. */
   isLocked?: boolean;
   isSaving: boolean;
   saveFailed: boolean;
   onEquipShirt: (shirt: ShirtId | null) => void;
   onEquipHair: (hair: HairId | null) => void;
+  onEquipFace: (face: FaceId | null) => void;
   onOpenCatalog: () => void;
 };
 
 type EditorItem = {
   key: string;
-  kind: 'shirt' | 'hair';
+  kind: 'shirt' | 'hair' | 'face';
   name: TranslationKey;
   isEquipped: boolean;
   thumbnail: ReactNode;
@@ -47,12 +50,15 @@ export default function AvatarEditorView({
   look,
   equippedShirt,
   equippedHair,
+  equippedFace,
   ownedHair,
+  ownedFaces,
   isLocked = false,
   isSaving,
   saveFailed,
   onEquipShirt,
   onEquipHair,
+  onEquipFace,
   onOpenCatalog,
 }: AvatarEditorViewProps) {
   const { t } = usePreferences();
@@ -80,13 +86,24 @@ export default function AvatarEditorView({
       thumbnail: <ItemThumbnail kind="hair" id={item.id} look={look} />,
     };
   });
+  const faceItems: EditorItem[] = FACE_ITEMS.filter((item) => ownedFaces.includes(item.id)).map((item) => {
+    const isEquipped = item.id === equippedFace;
+    return {
+      key: `face-${item.id}`,
+      kind: 'face',
+      name: item.name,
+      isEquipped,
+      onToggle: () => onEquipFace(isEquipped ? null : item.id),
+      thumbnail: <ItemThumbnail kind="face" id={item.id} look={look} />,
+    };
+  });
   const items =
     tab === 'clothing'
       ? shirtItems
       : tab === 'body'
-        ? hairItems
+        ? [...hairItems, ...faceItems]
         : tab === 'wearing'
-          ? [...shirtItems, ...hairItems].filter((item) => item.isEquipped)
+          ? [...shirtItems, ...hairItems, ...faceItems].filter((item) => item.isEquipped)
           : [];
   const tabLabel = TABS.find((entry) => entry.id === tab)?.label ?? 'avatarTabWearing';
 
@@ -119,6 +136,7 @@ export default function AvatarEditorView({
               look={look}
               shirt={equippedShirt}
               hair={equippedHair}
+              face={equippedFace}
               interactive
               fixedYaw={is3D ? null : FACING_LEFT_YAW}
             />

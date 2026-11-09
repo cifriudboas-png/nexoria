@@ -1,15 +1,19 @@
 import { Shirt } from 'lucide-react';
 import CharacterViewer from '@/components/avatar/CharacterViewer';
 import type { CharacterLook } from '@/components/avatar/characterAppearances';
-import { getShirtItem, type HairId, type ShirtId } from '@/lib/avatar';
+import { getShirtItem, type FaceId, type HairId, type ShirtId } from '@/lib/avatar';
 
 type ItemThumbnailProps =
   | { kind: 'shirt'; id: ShirtId; look: CharacterLook }
-  | { kind: 'hair'; id: HairId; look: CharacterLook };
+  | { kind: 'hair'; id: HairId; look: CharacterLook }
+  | { kind: 'face'; id: FaceId; look: CharacterLook };
 
 export default function ItemThumbnail(props: ItemThumbnailProps) {
   if (props.kind === 'hair') {
     return <CharacterViewer className="h-full w-full" framing="head" look={props.look} hair={props.id} />;
+  }
+  if (props.kind === 'face') {
+    return <CharacterViewer className="h-full w-full" framing="head" look={props.look} face={props.id} fixedYaw={0} />;
   }
 
   const shirt = getShirtItem(props.id);
