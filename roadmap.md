@@ -14,3 +14,6 @@
 - [x] Catalog accessory "Cabeça de cidade" (17 Nexos), mini city on top of the head, in Acessórios + Destaques
 - [x] Item info window shows the creator (NEXORIA for the 3 current items)
 - [x] Avatar > Corpo: skin color per body part, or the whole body at once
+- [x] Verified badge for NEXORIA and Vini_G
+- [x] Messages tab: chat between players
+- [x] Give the Admin panel to Vini_G
