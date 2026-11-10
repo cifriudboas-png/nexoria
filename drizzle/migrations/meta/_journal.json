@@ -43,6 +43,13 @@
       "when": 1794267580182,
       "tag": "0005_body_colors",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794271723503,
+      "tag": "0006_verified_badge_and_messages",
+      "breakpoints": true
     }
   ]
 }
