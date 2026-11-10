@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Bomb, Box, Pizza, Youtube } from 'lucide-react';
 import CharacterViewer from '@/components/avatar/CharacterViewer';
 import AvatarEditorView from '@/components/home/AvatarEditorView';
@@ -29,8 +29,14 @@ import ProfileView from '@/components/home/ProfileView';
 import PlayerProfileView from '@/components/home/PlayerProfileView';
 import FriendsView from '@/components/home/FriendsView';
 import HomeFriendsSection from '@/components/home/HomeFriendsSection';
+import MessagesView from '@/components/home/MessagesView';
+import VerifiedBadge from '@/components/home/VerifiedBadge';
 import type { Account } from '@/lib/account';
+import type { PlayerSummary } from '@/lib/friends';
+import { countUnreadMessages, getMyUserId, toChatMessage, type ChatMessage } from '@/lib/messages';
+import { getProfileDetails } from '@/lib/profile';
 import { usePreferences } from '@/lib/preferences-context';
+import { supabase } from '@/lib/supabase';
 
 type HomeScreenProps = {
   account: Account;
@@ -51,9 +57,17 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
   const [view, setViewState] = useState<HomeView>('home');
   // Username of another player whose profile is open; null shows your own profile.
   const [viewedPlayer, setViewedPlayer] = useState<string | null>(null);
+  // Player whose chat opens when Messages is shown from their profile.
+  const [chatWith, setChatWith] = useState<PlayerSummary | null>(null);
   const setView = (next: HomeView) => {
     setViewedPlayer(null);
+    setChatWith(null);
     setViewState(next);
+  };
+  const openChat = (player: PlayerSummary) => {
+    setViewedPlayer(null);
+    setChatWith(player);
+    setViewState('messages');
   };
   const openPlayer = (username: string) => {
     setViewedPlayer(username.toLowerCase() === displayName.toLowerCase() ? null : username);
@@ -72,10 +86,49 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [saveFailed, setSaveFailed] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [myUserId, setMyUserId] = useState<string | null>(null);
+  const [unreadMessages, setUnreadMessages] = useState(0);
+  const [latestMessage, setLatestMessage] = useState<ChatMessage | null>(null);
+
+  const refreshUnread = useCallback(() => {
+    if (!myUserId) return;
+    countUnreadMessages(myUserId)
+      .then(setUnreadMessages)
+      .catch(() => undefined);
+  }, [myUserId]);
+
+  // New messages arrive live, for the menu count and the open chat.
+  useEffect(() => {
+    if (!myUserId) return;
+    refreshUnread();
+    const channel = supabase
+      .channel(`messages-${Math.random().toString(36).slice(2)}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+        const message = toChatMessage(payload.new as Parameters<typeof toChatMessage>[0]);
+        if (message.senderId !== myUserId && message.recipientId !== myUserId) return;
+        setLatestMessage(message);
+        if (message.recipientId === myUserId) refreshUnread();
+      })
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [myUserId, refreshUnread]);
 
   useEffect(() => {
     if (isGuest) return;
     let isActive = true;
+    getMyUserId()
+      .then((id) => {
+        if (isActive) setMyUserId(id);
+      })
+      .catch(() => undefined);
+    getProfileDetails()
+      .then((details) => {
+        if (isActive) setIsVerified(details?.isVerified ?? false);
+      })
+      .catch(() => undefined);
     isCurrentUserAdmin()
       .then((admin) => {
         if (isActive) setIsAdmin(admin);
@@ -215,7 +268,13 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
       />
 
       <div className="flex flex-1 flex-col md:flex-row md:items-start">
-        <HomeSidebar displayName={displayName} activeView={view} onNavigate={setView} isAdmin={isAdmin} />
+        <HomeSidebar
+          displayName={displayName}
+          activeView={view}
+          onNavigate={setView}
+          isAdmin={isAdmin}
+          unreadMessages={unreadMessages}
+        />
 
         <main className="min-w-0 flex-1 px-4 pb-12 pt-8 sm:px-8 lg:px-12">
           {view === 'admin' && isAdmin ? (
@@ -271,8 +330,19 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
             />
           ) : view === 'friends' ? (
             <FriendsView isGuest={isGuest} currentUsername={displayName} onOpenPlayer={openPlayer} />
+          ) : view === 'messages' ? (
+            <MessagesView
+              key={chatWith?.id ?? 'inbox'}
+              isGuest={isGuest}
+              myUserId={myUserId}
+              currentUsername={displayName}
+              initialPlayer={chatWith}
+              latestMessage={latestMessage}
+              onOpenPlayer={openPlayer}
+              onUnreadChange={refreshUnread}
+            />
           ) : view === 'profile' && viewedPlayer ? (
-            <PlayerProfileView key={viewedPlayer} username={viewedPlayer} isGuest={isGuest} />
+            <PlayerProfileView key={viewedPlayer} username={viewedPlayer} isGuest={isGuest} onMessage={openChat} />
           ) : view === 'profile' ? (
             <ProfileView displayName={displayName} look={look} isGuest={isGuest} shirt={equippedShirt} hair={equippedHair} face={equippedFace} accessory={equippedAccessory} bodyColors={bodyColors} />
           ) : (
@@ -295,6 +365,7 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
                   >
                     {displayName}
                   </button>
+                  {isVerified && <VerifiedBadge className="ml-2 h-8 w-8 align-middle sm:h-12 sm:w-12" />}
                   {t('greetingSuffix')}
                 </h1>
               </section>

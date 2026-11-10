@@ -85,6 +85,48 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          read_at: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           account_number: number
@@ -96,6 +138,7 @@ export type Database = {
           equipped_hair: string | null
           equipped_shirt: string | null
           id: string
+          is_verified: boolean
           nexos: number
           username: string
         }
@@ -109,6 +152,7 @@ export type Database = {
           equipped_hair?: string | null
           equipped_shirt?: string | null
           id: string
+          is_verified?: boolean
           nexos?: number
           username: string
         }
@@ -122,6 +166,7 @@ export type Database = {
           equipped_hair?: string | null
           equipped_shirt?: string | null
           id?: string
+          is_verified?: boolean
           nexos?: number
           username?: string
         }
@@ -184,6 +229,7 @@ export type Database = {
           friend_count: number
           friend_status: string
           id: string
+          is_verified: boolean
           username: string
         }[]
       }
@@ -193,6 +239,24 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      list_conversations: {
+        Args: never
+        Returns: {
+          account_number: number
+          body_colors: Json
+          equipped_accessory: string
+          equipped_face: string
+          equipped_hair: string
+          equipped_shirt: string
+          id: string
+          is_verified: boolean
+          last_at: string
+          last_body: string
+          last_sender_id: string
+          unread_count: number
+          username: string
+        }[]
       }
       list_friend_requests: {
         Args: never
@@ -205,6 +269,7 @@ export type Database = {
           equipped_hair: string
           equipped_shirt: string
           id: string
+          is_verified: boolean
           requested_at: string
           username: string
         }[]
@@ -220,9 +285,11 @@ export type Database = {
           equipped_shirt: string
           friends_since: string
           id: string
+          is_verified: boolean
           username: string
         }[]
       }
+      mark_conversation_read: { Args: { _user_id: string }; Returns: undefined }
       purchase_item: { Args: { _item: string }; Returns: undefined }
       remove_friend: { Args: { _user_id: string }; Returns: undefined }
       respond_friend_request: {
@@ -239,10 +306,18 @@ export type Database = {
           equipped_hair: string
           equipped_shirt: string
           id: string
+          is_verified: boolean
           username: string
         }[]
       }
       send_friend_request: { Args: { _user_id: string }; Returns: string }
+      send_message: {
+        Args: { _body: string; _recipient_id: string }
+        Returns: {
+          created_at: string
+          id: string
+        }[]
+      }
       set_body_colors: { Args: { _colors: Json }; Returns: undefined }
       set_equipped_accessory: {
         Args: { _accessory: string }

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { Search, UserPlus } from 'lucide-react';
 import GuestLockedNotice from '@/components/home/GuestLockedNotice';
 import PlayerAvatar from '@/components/home/PlayerAvatar';
+import VerifiedBadge from '@/components/home/VerifiedBadge';
 import {
   FriendError,
   listFriendRequests,
@@ -157,9 +158,10 @@ export default function FriendsView({ isGuest, currentUsername, onOpenPlayer }: 
                   <button
                     type="button"
                     onClick={() => onOpenPlayer(request.username)}
-                    className="truncate text-sm font-semibold text-stone-900 hover:text-sky-700 dark:text-stone-100 dark:hover:text-sky-400"
+                    className="flex max-w-full items-center gap-1 text-sm font-semibold text-stone-900 hover:text-sky-700 dark:text-stone-100 dark:hover:text-sky-400"
                   >
-                    {request.username}
+                    <span className="truncate">{request.username}</span>
+                    {request.isVerified && <VerifiedBadge className="h-3.5 w-3.5" />}
                   </button>
                   <p className="text-xs text-stone-500 dark:text-stone-400">
                     {request.direction === 'incoming' ? t('friendsRequestReceived') : t('friendsRequestSentTo')}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { UserCheck, UserPlus } from 'lucide-react';
+import { MessageSquare, UserCheck, UserPlus } from 'lucide-react';
 import CharacterViewer from '@/components/avatar/CharacterViewer';
+import VerifiedBadge from '@/components/home/VerifiedBadge';
 import {
   FriendError,
   friendButtonLabel,
@@ -10,6 +11,7 @@ import {
   sendFriendRequest,
   type FriendStatus,
   type PlayerProfile,
+  type PlayerSummary,
 } from '@/lib/friends';
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
@@ -18,10 +20,12 @@ type PlayerProfileViewProps = {
   username: string;
   /** Guests can look at profiles but not add friends. */
   isGuest: boolean;
+  /** Opens a chat with this player in Messages. */
+  onMessage?: (player: PlayerSummary) => void;
 };
 
 /** Another player's profile, with the friend request button. */
-export default function PlayerProfileView({ username, isGuest }: PlayerProfileViewProps) {
+export default function PlayerProfileView({ username, isGuest, onMessage }: PlayerProfileViewProps) {
   const { t, language } = usePreferences();
   const [profile, setProfile] = useState<PlayerProfile | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'missing' | 'error'>('loading');
@@ -98,7 +102,19 @@ export default function PlayerProfileView({ username, isGuest }: PlayerProfileVi
         <p className="text-sm font-semibold uppercase tracking-wider text-sky-800 dark:text-sky-400">{t('playerProfileTitle')}</p>
         <h1 className="break-words text-4xl font-black leading-tight text-stone-900 dark:text-stone-100 sm:text-5xl">
           {profile.username}
+          {profile.isVerified && <VerifiedBadge className="ml-2 h-8 w-8 align-middle sm:h-9 sm:w-9" />}
         </h1>
+
+        {!isGuest && onMessage && profile.friendStatus !== 'self' && (
+          <button
+            type="button"
+            onClick={() => onMessage(profile)}
+            className="flex items-center justify-center gap-2 rounded-lg border border-sky-600 bg-white px-4 py-2.5 text-sm font-semibold text-sky-700 transition-colors duration-200 hover:bg-sky-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-sky-300 dark:border-sky-500 dark:bg-transparent dark:text-sky-300 dark:hover:bg-sky-950/50"
+          >
+            <MessageSquare className="h-4 w-4" />
+            {t('messagesSendTo')}
+          </button>
+        )}
 
         {buttonLabel && !isGuest && (
           <div className="flex flex-col gap-2">

@@ -15,6 +15,8 @@ export type PlayerSummary = {
   face: FaceId | null;
   accessory: AccessoryId | null;
   bodyColors: BodyColors;
+  /** Verified accounts show a blue check next to their name. */
+  isVerified: boolean;
 };
 
 export type PlayerProfile = PlayerSummary & {
@@ -49,9 +51,10 @@ type PlayerRow = {
   equipped_face: string | null;
   equipped_accessory?: string | null;
   body_colors?: unknown;
+  is_verified?: boolean | null;
 };
 
-function toSummary(row: PlayerRow): PlayerSummary {
+export function toSummary(row: PlayerRow): PlayerSummary {
   return {
     id: row.id,
     username: row.username,
@@ -61,6 +64,7 @@ function toSummary(row: PlayerRow): PlayerSummary {
     face: isFaceId(row.equipped_face) ? row.equipped_face : null,
     accessory: isAccessoryId(row.equipped_accessory) ? row.equipped_accessory : null,
     bodyColors: parseBodyColors(row.body_colors),
+    isVerified: row.is_verified === true,
   };
 }
 

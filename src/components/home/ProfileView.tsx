@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import CharacterViewer from '@/components/avatar/CharacterViewer';
+import VerifiedBadge from '@/components/home/VerifiedBadge';
 import type { CharacterLook } from '@/components/avatar/characterAppearances';
 import type { AccessoryId, FaceId, HairId, ShirtId } from '@/lib/avatar';
 import type { BodyColors } from '@/lib/bodyColors';
@@ -66,6 +67,7 @@ export default function ProfileView({ displayName, look, isGuest, shirt, hair, f
         </p>
         <h1 className="break-words text-4xl font-black leading-tight text-stone-900 dark:text-stone-100 sm:text-5xl">
           {displayName}
+          {details?.isVerified && <VerifiedBadge className="ml-2 h-8 w-8 align-middle sm:h-9 sm:w-9" />}
         </h1>
 
         {isGuest ? (

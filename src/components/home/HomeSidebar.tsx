@@ -16,7 +16,7 @@ import {
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
-export type HomeView = 'home' | 'profile' | 'friends' | 'catalog' | 'avatar' | 'inventory' | 'admin';
+export type HomeView = 'home' | 'profile' | 'friends' | 'messages' | 'catalog' | 'avatar' | 'inventory' | 'admin';
 
 type SidebarItem = {
   label: TranslationKey;
@@ -27,7 +27,7 @@ type SidebarItem = {
 const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: 'menuHome', icon: Home, view: 'home' },
   { label: 'menuProfile', icon: User, view: 'profile' },
-  { label: 'menuMessages', icon: MessageSquare },
+  { label: 'menuMessages', icon: MessageSquare, view: 'messages' },
   { label: 'menuFriends', icon: Users, view: 'friends' },
   { label: 'menuAvatar', icon: Shirt, view: 'avatar' },
   { label: 'menuInventory', icon: Package, view: 'inventory' },
@@ -43,11 +43,13 @@ type HomeSidebarProps = {
   displayName: string;
   activeView: HomeView;
   onNavigate: (view: HomeView) => void;
-  /** Only the NEXORIA admin account sees the Admin entry. */
+  /** Only admin accounts see the Admin entry. */
   isAdmin?: boolean;
+  /** Messages waiting to be read, shown next to "Messages". */
+  unreadMessages?: number;
 };
 
-export default function HomeSidebar({ displayName, activeView, onNavigate, isAdmin = false }: HomeSidebarProps) {
+export default function HomeSidebar({ displayName, activeView, onNavigate, isAdmin = false, unreadMessages = 0 }: HomeSidebarProps) {
   const { t } = usePreferences();
   const items = isAdmin ? [...SIDEBAR_ITEMS, ADMIN_ITEM] : SIDEBAR_ITEMS;
 
@@ -79,6 +81,15 @@ export default function HomeSidebar({ displayName, activeView, onNavigate, isAdm
             >
               <Icon className="h-5 w-5" />
               {t(label)}
+              {view === 'messages' && unreadMessages > 0 && (
+                <span
+                  className="ml-auto rounded-full bg-red-600 px-1.5 text-[11px] font-bold text-white"
+                  aria-label={t('messagesUnread', { count: unreadMessages })}
+                  data-testid="unread-messages"
+                >
+                  {unreadMessages > 99 ? '99+' : unreadMessages}
+                </span>
+              )}
             </button>
           );
         })}

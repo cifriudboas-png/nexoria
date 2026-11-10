@@ -20,7 +20,7 @@ describe("NEXORIA admin panel rules", () => {
     expect(adminErrorKey("cannot_ban_admin")).toBe("adminErrorBanAdmin");
   });
 
-  it("explains that only the NEXORIA account can use the panel", () => {
+  it("explains that only admin accounts can use the panel", () => {
     expect(adminErrorKey("forbidden")).toBe("adminErrorForbidden");
   });
 });
