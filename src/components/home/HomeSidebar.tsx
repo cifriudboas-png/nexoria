@@ -43,7 +43,7 @@ type HomeSidebarProps = {
   displayName: string;
   activeView: HomeView;
   onNavigate: (view: HomeView) => void;
-  /** Only the NEXORIA admin account sees the Admin entry. */
+  /** Only admin accounts see the Admin entry. */
   isAdmin?: boolean;
   /** Messages waiting to be read, shown next to "Messages". */
   unreadMessages?: number;
