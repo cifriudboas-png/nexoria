@@ -188,6 +188,7 @@ type Hit = { start: number; end: number; category: FilterCategory };
 
 function findHits(text: string): Hit[] {
   const tokens = tokenize(text);
+  const at = (position: number): Token => tokens[position] as Token;
   const hits: Hit[] = [];
   let index = 0;
   while (index < tokens.length) {
@@ -195,21 +196,21 @@ function findHits(text: string): Hit[] {
     const phrase = MATCHER.phrases.find(
       ({ tokens: expected }) =>
         index + expected.length <= tokens.length &&
-        expected.every((word, offset) => tokenMatches(tokens[index + offset].normalized, word)),
+        expected.every((word, offset) => tokenMatches(at(index + offset).normalized, word)),
     );
     if (phrase) {
-      hits.push({ start: tokens[index].start, end: tokens[index + phrase.tokens.length - 1].end, category: phrase.category });
+      hits.push({ start: at(index).start, end: at(index + phrase.tokens.length - 1).end, category: phrase.category });
       index += phrase.tokens.length;
       continue;
     }
 
     // 2) Letras separadas ("p u t a", "p.u.t.a").
-    if (tokens[index].text.length === 1) {
+    if (at(index).text.length === 1) {
       let last = index;
       while (
         last + 1 < tokens.length &&
-        tokens[last + 1].text.length === 1 &&
-        tokens[last + 1].start - tokens[last].end <= 2
+        at(last + 1).text.length === 1 &&
+        at(last + 1).start - at(last).end <= 2
       ) {
         last += 1;
       }
@@ -217,7 +218,7 @@ function findHits(text: string): Hit[] {
         const joined = tokens.slice(index, last + 1).map((token) => token.text).join('');
         const category = categorizeWord(joined);
         if (category) {
-          hits.push({ start: tokens[index].start, end: tokens[last].end, category });
+          hits.push({ start: at(index).start, end: at(last).end, category });
           index = last + 1;
           continue;
         }
@@ -225,8 +226,8 @@ function findHits(text: string): Hit[] {
     }
 
     // 3) Palavra sozinha.
-    const category = categorizeWord(tokens[index].text);
-    if (category) hits.push({ start: tokens[index].start, end: tokens[index].end, category });
+    const category = categorizeWord(at(index).text);
+    if (category) hits.push({ start: at(index).start, end: at(index).end, category });
     index += 1;
   }
   return hits;
