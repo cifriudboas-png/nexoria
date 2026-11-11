@@ -114,8 +114,9 @@ function buildMatcher(): Matcher {
   for (const category of [...CATEGORY_ORDER].reverse()) {
     for (const entry of LISTS[category].words) {
       const tokens = entry.split(/\s+/).map(normalizeWord);
-      if (tokens.length === 1) {
-        single.set(tokens[0], category);
+      const [first] = tokens;
+      if (tokens.length === 1 && first) {
+        single.set(first, category);
       } else {
         phrases.push({ tokens, category });
       }
