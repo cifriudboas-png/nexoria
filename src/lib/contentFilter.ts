@@ -246,7 +246,8 @@ export function filterText(text: string): FilterResult {
   }
   result += text.slice(cursor);
   const found = new Set(hits.map((hit) => hit.category));
-  return { text: result, categories: CATEGORY_ORDER.filter((category) => found.has(category)) };
+  const shownOrder: FilterCategory[] = ['profanity', 'violence', 'sexual'];
+  return { text: result, categories: shownOrder.filter((category) => found.has(category)) };
 }
 
 /** Atalho para mostrar um texto já filtrado. */

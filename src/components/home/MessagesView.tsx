@@ -36,6 +36,12 @@ type MessagesViewProps = {
   onUnreadChange: () => void;
 };
 
+/** "a", "a e b", "a, b e c". */
+function joinList(items: string[], lastSeparator: string): string {
+  if (items.length <= 1) return items.join('');
+  return `${items.slice(0, -1).join(', ')}${lastSeparator}${items[items.length - 1]}`;
+}
+
 const CARD = 'rounded-xl bg-white shadow-sm ring-1 ring-stone-900/5 dark:bg-stone-900 dark:ring-white/10';
 
 export default function MessagesView({
@@ -349,9 +355,7 @@ export default function MessagesView({
                     <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                     <p className="flex-1">
                       {t('filterWarning', {
-                        types: filterLabelKeys(filterWarning)
-                          .map((key) => t(key))
-                          .join(t('filterJoin')),
+                        types: joinList(filterLabelKeys(filterWarning).map((key) => t(key)), t('filterJoin')),
                       })}
                     </p>
                     <button
