@@ -1,4 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
+import { cleanText } from '@/lib/contentFilter';
 import { usePreferences } from '@/lib/preferences-context';
 
 type ExperienceCardProps = {
@@ -16,7 +17,7 @@ export default function ExperienceCard({ title, icon: Icon, gradientClass }: Exp
         <Icon className="h-16 w-16 text-white/90 drop-shadow-md transition-transform duration-500 ease-out group-hover:scale-110" />
       </div>
       <div className="px-3 pb-3 pt-2.5">
-        <h3 className="truncate text-sm font-medium text-stone-800 dark:text-stone-100">{title}</h3>
+        <h3 className="truncate text-sm font-medium text-stone-800 dark:text-stone-100">{cleanText(title)}</h3>
         <p className="mt-0.5 text-xs text-stone-500 dark:text-stone-400">{t('comingSoon')}</p>
       </div>
     </article>

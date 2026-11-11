@@ -13,6 +13,7 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { canAfford, CATALOG_ITEMS, formatItemDate, PurchaseError, type CatalogItem, type CatalogItemId } from '@/lib/avatar';
 import { formatNexos } from '@/lib/nexos';
+import { cleanText } from '@/lib/contentFilter';
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
@@ -182,7 +183,7 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedItems,
 
   const visibleItems = CATALOG_ITEMS.filter((item) =>
     submittedQuery
-      ? normalizeSearch(t(item.name)).includes(normalizeSearch(submittedQuery))
+      ? normalizeSearch(cleanText(t(item.name))).includes(normalizeSearch(submittedQuery))
       : item.categories.includes(selected),
   );
 
@@ -315,13 +316,13 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedItems,
                     <button
                       type="button"
                       onClick={() => setViewing(item)}
-                      aria-label={t('catalogViewDetails', { item: t(item.name) })}
+                      aria-label={t('catalogViewDetails', { item: cleanText(t(item.name)) })}
                       className="block aspect-square w-full cursor-pointer bg-gradient-to-b from-stone-50 to-stone-200 transition-opacity duration-200 hover:opacity-90 focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-emerald-300 dark:from-stone-800 dark:to-stone-950"
                     >
                       <CatalogThumbnail item={item} look={look} />
                     </button>
                     <div className="p-3">
-                      <h3 className="line-clamp-2 text-sm font-semibold text-stone-800 dark:text-stone-100">{t(item.name)}</h3>
+                      <h3 className="line-clamp-2 text-sm font-semibold text-stone-800 dark:text-stone-100">{cleanText(t(item.name))}</h3>
                       <p className="mt-1 text-sm font-bold text-emerald-700 dark:text-emerald-400">
                         {formatNexos(item.priceNexos, language)} {t('nexos')}
                       </p>
@@ -362,8 +363,8 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedItems,
           {viewing && (
             <>
               <DialogHeader>
-                <DialogTitle>{t(viewing.name)}</DialogTitle>
-                <DialogDescription className="sr-only">{t(viewing.description)}</DialogDescription>
+                <DialogTitle>{cleanText(t(viewing.name))}</DialogTitle>
+                <DialogDescription className="sr-only">{cleanText(t(viewing.description))}</DialogDescription>
               </DialogHeader>
               <div className="mx-auto aspect-square w-48 overflow-hidden rounded-lg bg-gradient-to-b from-stone-50 to-stone-200 dark:from-stone-800 dark:to-stone-950">
                 <CatalogThumbnail item={viewing} look={look} />
@@ -377,7 +378,7 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedItems,
                 </div>
                 <div>
                   <dt className="font-semibold text-stone-500 dark:text-stone-400">{t('catalogInfoDescription')}</dt>
-                  <dd className="text-stone-800 dark:text-stone-100">{t(viewing.description)}</dd>
+                  <dd className="text-stone-800 dark:text-stone-100">{cleanText(t(viewing.description))}</dd>
                 </div>
                 <div>
                   <dt className="font-semibold text-stone-500 dark:text-stone-400">{t('catalogInfoCreator')}</dt>
@@ -408,7 +409,7 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedItems,
             <>
               <AlertDialogHeader>
                 <AlertDialogTitle>{t('catalogBoughtTitle')}</AlertDialogTitle>
-                <AlertDialogDescription>{t('catalogBoughtText', { item: t(buying.name) })}</AlertDialogDescription>
+                <AlertDialogDescription>{t('catalogBoughtText', { item: cleanText(t(buying.name)) })}</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <button
@@ -435,7 +436,7 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedItems,
               <AlertDialogHeader>
                 <AlertDialogTitle>{t('catalogConfirmTitle')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  {t('catalogConfirmText', { item: t(buying.name), price: formatNexos(buying.priceNexos, language) })}
+                  {t('catalogConfirmText', { item: cleanText(t(buying.name)), price: formatNexos(buying.priceNexos, language) })}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <div className="flex items-center gap-4">
@@ -443,7 +444,7 @@ export default function CatalogView({ look, isLocked = false, nexos, ownedItems,
                   <CatalogThumbnail item={buying} look={look} />
                 </div>
                 <div className="text-sm">
-                  <p className="font-semibold text-stone-800 dark:text-stone-100">{t(buying.name)}</p>
+                  <p className="font-semibold text-stone-800 dark:text-stone-100">{cleanText(t(buying.name))}</p>
                   <p className="font-bold text-emerald-700 dark:text-emerald-400">
                     {formatNexos(buying.priceNexos, language)} {t('nexos')}
                   </p>

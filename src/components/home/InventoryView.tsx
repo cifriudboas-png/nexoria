@@ -4,6 +4,7 @@ import type { CharacterLook } from '@/components/avatar/characterAppearances';
 import GuestLockedNotice from '@/components/home/GuestLockedNotice';
 import ItemThumbnail from '@/components/home/ItemThumbnail';
 import { ACCESSORY_ITEMS, FACE_ITEMS, HAIR_ITEMS, SHIRT_ITEMS, type AccessoryId, type FaceId, type HairId, type ShirtId } from '@/lib/avatar';
+import { cleanText } from '@/lib/contentFilter';
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
@@ -136,7 +137,7 @@ export default function InventoryView({
                   {entry.thumbnail}
                 </div>
                 <div className="p-3">
-                  <h2 className="line-clamp-2 text-sm font-semibold text-stone-800 dark:text-stone-100">{t(entry.name)}</h2>
+                  <h2 className="line-clamp-2 text-sm font-semibold text-stone-800 dark:text-stone-100">{cleanText(t(entry.name))}</h2>
                   <button
                     type="button"
                     aria-pressed={entry.isEquipped}

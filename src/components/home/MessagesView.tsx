@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
-import { ArrowLeft, MessageSquare, Search, Send } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, MessageSquare, Search, Send, X } from 'lucide-react';
 import GuestLockedNotice from '@/components/home/GuestLockedNotice';
 import PlayerAvatar from '@/components/home/PlayerAvatar';
 import VerifiedBadge from '@/components/home/VerifiedBadge';
+import { cleanText, type FilterCategory } from '@/lib/contentFilter';
 import { searchPlayers, type PlayerSummary } from '@/lib/friends';
 import {
   MAX_MESSAGE_LENGTH,
   MessageError,
+  filterLabelKeys,
   formatMessageTime,
   isInConversation,
   listConversations,
@@ -34,6 +36,12 @@ type MessagesViewProps = {
   onUnreadChange: () => void;
 };
 
+/** "a", "a e b", "a, b e c". */
+function joinList(items: string[], lastSeparator: string): string {
+  if (items.length <= 1) return items.join('');
+  return `${items.slice(0, -1).join(', ')}${lastSeparator}${items[items.length - 1]}`;
+}
+
 const CARD = 'rounded-xl bg-white shadow-sm ring-1 ring-stone-900/5 dark:bg-stone-900 dark:ring-white/10';
 
 export default function MessagesView({
@@ -54,6 +62,7 @@ export default function MessagesView({
   const [draft, setDraft] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState<TranslationKey | null>(null);
+  const [filterWarning, setFilterWarning] = useState<FilterCategory[]>([]);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<PlayerSummary[] | null>(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -80,6 +89,7 @@ export default function MessagesView({
     setThread(null);
     setThreadError(false);
     setSendError(null);
+    setFilterWarning([]);
     loadConversation(myUserId, selectedId)
       .then(async (messages) => {
         if (!isActive) return;
@@ -159,6 +169,7 @@ export default function MessagesView({
       const message = await sendMessage(myUserId, selected.id, prepared.body);
       setThread((current) => mergeMessage(current ?? [], message));
       setDraft('');
+      setFilterWarning(prepared.filtered);
       void loadConversations();
     } catch (error) {
       setSendError(error instanceof MessageError ? error.key : 'messagesErrorGeneric');
@@ -258,7 +269,7 @@ export default function MessagesView({
                     <ConversationRow
                       player={conversation}
                       isActive={conversation.id === selectedId}
-                      preview={`${conversation.lastSenderId === myUserId ? t('messagesYouPrefix') : ''}${conversation.lastBody}`}
+                      preview={`${conversation.lastSenderId === myUserId ? t('messagesYouPrefix') : ''}${cleanText(conversation.lastBody)}`}
                       time={formatMessageTime(conversation.lastAt, language)}
                       unread={conversation.unreadCount}
                       onSelect={() => openConversation(conversation)}
@@ -323,7 +334,7 @@ export default function MessagesView({
                               : 'rounded-bl-sm bg-white text-stone-900 ring-1 ring-stone-900/5 dark:bg-stone-800 dark:text-stone-100 dark:ring-white/10'
                           }`}
                         >
-                          <p className="whitespace-pre-wrap break-words">{message.body}</p>
+                          <p className="whitespace-pre-wrap break-words">{cleanText(message.body)}</p>
                           <p className={`mt-1 text-right text-[10px] ${mine ? 'text-sky-100' : 'text-stone-400'}`}>
                             {formatMessageTime(message.createdAt, language)}
                           </p>
@@ -335,6 +346,28 @@ export default function MessagesView({
               </div>
 
               <form onSubmit={handleSend} className="border-t border-stone-200 p-3 dark:border-stone-800">
+                {filterWarning.length > 0 && (
+                  <div
+                    role="alert"
+                    data-testid="filter-warning"
+                    className="mb-2 flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-900 ring-1 ring-amber-300 dark:bg-amber-950/60 dark:text-amber-200 dark:ring-amber-800"
+                  >
+                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                    <p className="flex-1">
+                      {t('filterWarning', {
+                        types: joinList(filterLabelKeys(filterWarning).map((key) => t(key)), t('filterJoin')),
+                      })}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setFilterWarning([])}
+                      aria-label={t('filterDismiss')}
+                      className="rounded p-0.5 hover:bg-amber-100 dark:hover:bg-amber-900"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                )}
                 {sendError && (
                   <p role="alert" className="mb-2 text-xs font-medium text-red-700 dark:text-red-400">
                     {t(sendError, { max: MAX_MESSAGE_LENGTH })}
