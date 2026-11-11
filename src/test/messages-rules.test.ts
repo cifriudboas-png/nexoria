@@ -12,7 +12,7 @@ const message = (id: string, senderId: string, recipientId: string, createdAt: s
 
 describe('chat between players', () => {
   it('sends the trimmed text', () => {
-    expect(prepareMessageBody('  olá!  ')).toEqual({ body: 'olá!' });
+    expect(prepareMessageBody('  olá!  ')).toEqual({ body: 'olá!', filtered: [] });
   });
 
   it('refuses an empty message', () => {
