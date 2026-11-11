@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      forum_posts: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          edited_at: string | null
+          id: string
+          last_activity_at: string
+          title: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          edited_at?: string | null
+          id?: string
+          last_activity_at?: string
+          title: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          edited_at?: string | null
+          id?: string
+          last_activity_at?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_replies: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          edited_at: string | null
+          id: string
+          post_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          edited_at?: string | null
+          id?: string
+          post_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          edited_at?: string | null
+          id?: string
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_replies_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_replies_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "forum_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friendships: {
         Row: {
           addressee_id: string
@@ -216,6 +296,38 @@ export type Database = {
         Returns: undefined
       }
       catalog_price: { Args: { _item: string }; Returns: number }
+      create_forum_post: {
+        Args: { _body: string; _title: string }
+        Returns: string
+      }
+      create_forum_reply: {
+        Args: { _body: string; _post_id: string }
+        Returns: string
+      }
+      delete_forum_post: { Args: { _post_id: string }; Returns: undefined }
+      delete_forum_reply: { Args: { _reply_id: string }; Returns: undefined }
+      forum_require_active_player: { Args: never; Returns: undefined }
+      get_forum_post: {
+        Args: { _post_id: string }
+        Returns: {
+          author_accessory: string
+          author_account_number: number
+          author_body_colors: Json
+          author_face: string
+          author_hair: string
+          author_id: string
+          author_is_verified: boolean
+          author_shirt: string
+          author_username: string
+          body: string
+          created_at: string
+          edited_at: string
+          id: string
+          last_activity_at: string
+          reply_count: number
+          title: string
+        }[]
+      }
       get_player_profile: {
         Args: { _username: string }
         Returns: {
@@ -256,6 +368,45 @@ export type Database = {
           last_sender_id: string
           unread_count: number
           username: string
+        }[]
+      }
+      list_forum_posts: {
+        Args: { _search?: string }
+        Returns: {
+          author_accessory: string
+          author_account_number: number
+          author_body_colors: Json
+          author_face: string
+          author_hair: string
+          author_id: string
+          author_is_verified: boolean
+          author_shirt: string
+          author_username: string
+          body: string
+          created_at: string
+          edited_at: string
+          id: string
+          last_activity_at: string
+          reply_count: number
+          title: string
+        }[]
+      }
+      list_forum_replies: {
+        Args: { _post_id: string }
+        Returns: {
+          author_accessory: string
+          author_account_number: number
+          author_body_colors: Json
+          author_face: string
+          author_hair: string
+          author_id: string
+          author_is_verified: boolean
+          author_shirt: string
+          author_username: string
+          body: string
+          created_at: string
+          edited_at: string
+          id: string
         }[]
       }
       list_friend_requests: {
@@ -326,6 +477,14 @@ export type Database = {
       set_equipped_face: { Args: { _face: string }; Returns: undefined }
       set_equipped_hair: { Args: { _hair: string }; Returns: undefined }
       set_equipped_shirt: { Args: { _shirt: string }; Returns: undefined }
+      update_forum_post: {
+        Args: { _body: string; _post_id: string; _title: string }
+        Returns: undefined
+      }
+      update_forum_reply: {
+        Args: { _body: string; _reply_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin"

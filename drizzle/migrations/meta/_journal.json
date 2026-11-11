@@ -50,6 +50,13 @@
       "when": 1794271723503,
       "tag": "0006_verified_badge_and_messages",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794360076526,
+      "tag": "0007_forums_posts_and_replies",
+      "breakpoints": true
     }
   ]
 }
