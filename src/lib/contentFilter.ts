@@ -32,30 +32,30 @@ const LISTS: Record<FilterCategory, WordList> = {
       'porra', 'porras', 'caralho', 'caralhos', 'krl', 'crl', 'carai', 'caraio', 'merda', 'merdas', 'mrd', 'bosta', 'bostas',
       'puta', 'putas', 'puto', 'putos', 'pqp', 'fdp', 'vsf', 'vtnc', 'tnc', 'foda', 'fodas', 'fodase', 'foder', 'fodido',
       'fodida', 'fodidos', 'fudido', 'fudida', 'fuder', 'cu', 'cus', 'cuzao', 'cuzão', 'cuzinho', 'arrombado', 'arrombada',
-      'arrombados', 'cacete', 'cacetada', 'babaca', 'babacas', 'otario', 'otaria', 'otarios', 'viado', 'viados', 'veado',
-      'corno', 'cornos', 'corna', 'escroto', 'escrota', 'piranha', 'piranhas', 'vagabundo', 'vagabunda', 'desgracado',
+      'arrombados', 'cacete', 'cacetada', 'babaca', 'babacas', 'otario', 'otaria', 'otarios', 'viado', 'viados',
+      'corno', 'cornos', 'corna', 'escroto', 'escrota', 'vagabundo', 'vagabunda', 'desgracado',
       'desgracada', 'retardado', 'retardada', 'imbecil', 'imbecis', 'filho da puta', 'vai tomar no cu', 'vai se foder',
       'vai se fuder',
       // inglês
       'shit', 'shits', 'shitty', 'bullshit', 'bitch', 'bitches', 'asshole', 'assholes', 'bastard', 'bastards', 'cunt',
       'cunts', 'wtf', 'stfu', 'damn', 'dumbass', 'jackass', 'retard', 'retards', 'fag', 'fags', 'faggot', 'piss off',
     ],
-    fragments: ['fuck', 'caralh', 'motherf', 'filhodaput', 'bitch'],
+    fragments: ['fuck', 'caralh', 'porra', 'merda', 'fodase', 'motherf', 'filhodaput', 'bitch'],
   },
   violence: {
     words: [
       // português
       'decapitar', 'decapitado', 'decapitada', 'decapitou', 'decapito', 'degolar', 'degolado', 'degolada', 'degolou',
       'esquartejar', 'esquartejado', 'esquartejada', 'esquartejou', 'estripar', 'estripado', 'estripada', 'mutilar',
-      'mutilado', 'mutilada', 'mutilacao', 'mutilação', 'torturar', 'torturado', 'torturada', 'tortura', 'torturas',
-      'chacina', 'chacinas', 'massacre', 'massacres', 'massacrar', 'genocidio', 'genocídio', 'estupro', 'estupros',
+      'mutilado', 'mutilada', 'mutilacao', 'mutilação', 'torturar', 'torturado', 'torturada', 'chacina', 'chacinas',
+      'genocidio', 'genocídio', 'estupro', 'estupros',
       'estuprar', 'estuprador', 'estuprada', 'estuprado', 'banho de sangue', 'cortar a garganta', 'cortar sua garganta',
       'arrancar a cabeca', 'arrancar sua cabeca', 'arrancar a cabeça', 'arrancar sua cabeça', 'tiro na cabeca',
-      'tiro na cabeça', 'se mata', 'se matar', 'vai se matar', 'matar todos', 'matar todo mundo', 'explodir a escola',
+      'tiro na cabeça', 'vai se matar', 'matar todos', 'matar todo mundo', 'explodir a escola',
       'ataque na escola',
       // inglês
       'decapitate', 'decapitated', 'behead', 'beheaded', 'beheading', 'dismember', 'dismembered', 'disembowel',
-      'disemboweled', 'mutilate', 'mutilated', 'torture', 'tortured', 'massacre', 'genocide', 'rape', 'raped', 'rapist',
+      'disemboweled', 'mutilate', 'mutilated', 'tortured', 'genocide', 'rape', 'raped', 'rapist',
       'gore', 'bloodbath', 'kys', 'kill yourself', 'kill urself', 'slit your throat', 'slit throat', 'school shooting',
       'shoot up the school',
     ],
@@ -66,9 +66,9 @@ const LISTS: Record<FilterCategory, WordList> = {
       // português
       'sexo', 'sexual', 'sexuais', 'transar', 'transei', 'transou', 'putaria', 'putarias', 'buceta', 'bucetas', 'xoxota',
       'xereca', 'xota', 'boquete', 'boquetes', 'punheta', 'punhetas', 'siririca', 'gozar', 'gozei', 'gozou', 'gozada',
-      'porno', 'pornô', 'pornografia', 'nude', 'nudes', 'pelado', 'pelada', 'pelados', 'peladas', 'tesao', 'tesão',
+      'porno', 'pornô', 'pornografia', 'nude', 'nudes', 'tesao', 'tesão',
       'tesuda', 'tesudo', 'orgasmo', 'orgasmos', 'masturbar', 'masturbacao', 'masturbação', 'penis', 'pênis', 'vagina',
-      'vaginas', 'safada', 'safadinha', 'gostosa', 'gostosas', 'rola', 'pau duro', 'peitos de fora', 'manda nude',
+      'vaginas', 'pau duro', 'peitos de fora', 'manda nude',
       'manda nudes',
       // inglês
       'sex', 'sexy', 'porn', 'porno', 'naked', 'boobs', 'boob', 'tits', 'titties', 'pussy', 'pussies', 'cock', 'cocks',
@@ -129,8 +129,12 @@ function buildMatcher(): Matcher {
 
 const MATCHER = buildMatcher();
 
+function squash(word: string): string {
+  return word.replace(/(.)\1+/g, '$1');
+}
+
 function tokenMatches(token: string, expected: string): boolean {
-  return wordForms(token).includes(expected) || wordForms(token).some((form) => form === expected.replace(/(.)\1+/g, '$1') && expected.length > 3);
+  return wordForms(token).includes(expected) || (expected.length > 3 && squash(token) === squash(expected));
 }
 
 /** Categoria de uma palavra sozinha, ou null se ela for permitida. */
@@ -145,10 +149,10 @@ export function categorizeWord(word: string): FilterCategory | null {
   }
   // Forma com todas as letras repetidas juntadas só vale para palavras maiores,
   // para não confundir palavras curtas normais.
-  const squashed = normalized.replace(/(.)\1+/g, '$1');
+  const squashed = squash(normalized);
   if (squashed.length > 3) {
     for (const [entry, category] of MATCHER.single) {
-      if (entry.length > 3 && entry.replace(/(.)\1+/g, '$1') === squashed) return category;
+      if (entry.length > 3 && squash(entry) === squashed) return category;
     }
   }
   for (const category of CATEGORY_ORDER) {
@@ -248,12 +252,8 @@ export function cleanText(text: string): string {
   return filterText(text).text;
 }
 
-/** Nomes de usuário não podem ter nada proibido, nem escondido no meio (ex.: "xx_porra_xx"). */
+/** Nomes de usuário não podem ter nada proibido, nem grudado (ex.: "xx_p0rra_xx", "caralhoboy"). */
 export function isUsernameBlocked(username: string): boolean {
   if (filterText(username.replace(/_/g, ' ')).categories.length > 0) return true;
-  const normalized = normalizeWord(username).replace(/[^a-z]/g, '');
-  return wordForms(normalized).some((form) =>
-    [...MATCHER.single.keys()].some((word) => word.length >= 5 && !word.includes(' ') && form.includes(word)) ||
-    MATCHER.fragments.some(({ fragment }) => form.includes(fragment)),
-  );
+  return categorizeWord(username.replace(/_/g, '')) !== null;
 }
