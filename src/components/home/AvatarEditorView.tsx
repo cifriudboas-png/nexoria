@@ -7,6 +7,7 @@ import type { BodyColors } from '@/lib/bodyColors';
 import CharacterViewer from '@/components/avatar/CharacterViewer';
 import type { CharacterLook } from '@/components/avatar/characterAppearances';
 import { ACCESSORY_ITEMS, FACE_ITEMS, HAIR_ITEMS, SHIRT_ITEMS, type AccessoryId, type FaceId, type HairId, type ShirtId } from '@/lib/avatar';
+import { cleanText } from '@/lib/contentFilter';
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
@@ -240,7 +241,7 @@ export default function AvatarEditorView({
                     </span>
                   )}
                   <div className="aspect-square bg-stone-50 dark:bg-stone-800">{item.thumbnail}</div>
-                  <p className="line-clamp-2 px-2 py-2 text-xs font-medium text-stone-800 dark:text-stone-100">{t(item.name)}</p>
+                  <p className="line-clamp-2 px-2 py-2 text-xs font-medium text-stone-800 dark:text-stone-100">{cleanText(t(item.name))}</p>
                 </button>
               ))}
             </div>

@@ -1,3 +1,4 @@
+import { isUsernameBlocked } from '@/lib/contentFilter';
 import { supabase } from '@/lib/supabase';
 import type { TranslationKey } from '@/lib/translations';
 
@@ -50,6 +51,8 @@ export function validateSignupForm(values: SignupFormValues): SignupFormErrors {
     errors.username = { key: 'usernameRequired' };
   } else if (!USERNAME_PATTERN.test(username)) {
     errors.username = { key: 'usernameInvalid' };
+  } else if (isUsernameBlocked(username)) {
+    errors.username = { key: 'usernameBlocked' };
   }
 
   if (!values.password) {

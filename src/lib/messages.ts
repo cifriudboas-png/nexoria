@@ -1,3 +1,4 @@
+import { filterText, type FilterCategory } from '@/lib/contentFilter';
 import { toSummary, type PlayerSummary } from '@/lib/friends';
 import { supabase } from '@/lib/supabase';
 import type { Language, TranslationKey } from '@/lib/translations';
@@ -33,12 +34,29 @@ export class MessageError extends Error {
   }
 }
 
-/** Trims what the player typed and checks it can be sent. */
-export function prepareMessageBody(text: string): { body: string } | { error: TranslationKey } {
-  const body = text.trim();
-  if (!body) return { error: 'messagesEmpty' };
+/**
+ * Trims what the player typed, swaps forbidden words for the filter masks and
+ * checks it can be sent. `filtered` lists what the filter found, for the warning.
+ */
+export function prepareMessageBody(
+  text: string,
+): { body: string; filtered: FilterCategory[] } | { error: TranslationKey } {
+  const trimmed = text.trim();
+  if (!trimmed) return { error: 'messagesEmpty' };
+  const { text: body, categories } = filterText(trimmed);
   if (body.length > MAX_MESSAGE_LENGTH) return { error: 'messagesTooLong' };
-  return { body };
+  return { body, filtered: categories };
+}
+
+const FILTER_LABELS: Record<FilterCategory, TranslationKey> = {
+  profanity: 'filterProfanity',
+  violence: 'filterViolence',
+  sexual: 'filterSexual',
+};
+
+/** Translation keys for the kinds of content the filter found, in warning order. */
+export function filterLabelKeys(categories: FilterCategory[]): TranslationKey[] {
+  return categories.map((category) => FILTER_LABELS[category]);
 }
 
 export function messageErrorKey(message: string | undefined): TranslationKey {
