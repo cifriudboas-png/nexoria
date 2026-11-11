@@ -17,3 +17,4 @@
 - [x] Verified badge for NEXORIA and Vini_G
 - [x] Messages tab: chat between players
 - [x] Give the Admin panel to Vini_G
+- [x] Content filter: swear words, extreme violence, sexual content masked with # + warning (chat, items, games, usernames)
