@@ -16,7 +16,7 @@ import {
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
-export type HomeView = 'home' | 'profile' | 'friends' | 'messages' | 'catalog' | 'avatar' | 'inventory' | 'admin';
+export type HomeView = 'home' | 'profile' | 'friends' | 'messages' | 'catalog' | 'avatar' | 'inventory' | 'forums' | 'admin';
 
 type SidebarItem = {
   label: TranslationKey;
@@ -34,7 +34,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: 'menuTrades', icon: ArrowLeftRight },
   { label: 'menuGroups', icon: UsersRound },
   { label: 'menuBlog', icon: Megaphone },
-  { label: 'menuForums', icon: MessagesSquare },
+  { label: 'menuForums', icon: MessagesSquare, view: 'forums' },
 ];
 
 const ADMIN_ITEM: SidebarItem = { label: 'menuAdmin', icon: ShieldCheck, view: 'admin' };
