@@ -30,6 +30,7 @@ import PlayerProfileView from '@/components/home/PlayerProfileView';
 import FriendsView from '@/components/home/FriendsView';
 import HomeFriendsSection from '@/components/home/HomeFriendsSection';
 import MessagesView from '@/components/home/MessagesView';
+import ForumView from '@/components/home/ForumView';
 import VerifiedBadge from '@/components/home/VerifiedBadge';
 import type { Account } from '@/lib/account';
 import type { PlayerSummary } from '@/lib/friends';
@@ -330,6 +331,8 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
             />
           ) : view === 'friends' ? (
             <FriendsView isGuest={isGuest} currentUsername={displayName} onOpenPlayer={openPlayer} />
+          ) : view === 'forums' ? (
+            <ForumView isGuest={isGuest} myUserId={myUserId} isAdmin={isAdmin} onOpenPlayer={openPlayer} />
           ) : view === 'messages' ? (
             <MessagesView
               key={chatWith?.id ?? 'inbox'}
