@@ -49,7 +49,7 @@ describe('Nexoria Builder world', () => {
   it('a loose block with nothing below falls out of the world', () => {
     const lone: Part = { ...createPart([], 'block', 'Bloco'), anchored: false, position: [500, 10, 500] };
     const sim = run([lone], 5);
-    expect(sim[0].removed).toBe(true);
+    expect(sim[0]!.removed).toBe(true);
   });
 
   it('a new block is placed on top of what is at the center', () => {
