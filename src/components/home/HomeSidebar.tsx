@@ -1,17 +1,13 @@
 import type { LucideIcon } from 'lucide-react';
 import {
-  ArrowLeftRight,
   Home,
-  Megaphone,
-  MessagesSquare,
   MessageSquare,
+  MessagesSquare,
   Package,
-  Shirt,
   ShieldCheck,
-  Sparkles,
+  Shirt,
   User,
   Users,
-  UsersRound,
 } from 'lucide-react';
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
@@ -31,9 +27,6 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: 'menuFriends', icon: Users, view: 'friends' },
   { label: 'menuAvatar', icon: Shirt, view: 'avatar' },
   { label: 'menuInventory', icon: Package, view: 'inventory' },
-  { label: 'menuTrades', icon: ArrowLeftRight },
-  { label: 'menuGroups', icon: UsersRound },
-  { label: 'menuBlog', icon: Megaphone },
   { label: 'menuForums', icon: MessagesSquare, view: 'forums' },
 ];
 
@@ -93,28 +86,7 @@ export default function HomeSidebar({ displayName, activeView, onNavigate, isAdm
             </button>
           );
         })}
-        <button
-          type="button"
-          disabled
-          title={t('comingSoon')}
-          className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-sky-700 px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-80 md:hidden"
-        >
-          <Sparkles className="h-4 w-4" />
-          {t('premium')}
-        </button>
       </nav>
-
-      <div className="hidden p-4 md:block">
-        <button
-          type="button"
-          disabled
-          title={t('comingSoon')}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-80 disabled:hover:bg-sky-700"
-        >
-          <Sparkles className="h-4 w-4" />
-          {t('premium')}
-        </button>
-      </div>
     </aside>
   );
 }
