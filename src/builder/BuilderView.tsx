@@ -483,7 +483,7 @@ function Vec3Field({ label, value, step, onChange }: { label: string; value: Vec
           <NumberInput
             key={axis}
             axis={axis}
-            value={value[index]}
+            value={value[index] ?? 0}
             step={step}
             onCommit={(next) => {
               const copy = [...value] as Vec3;

@@ -29,8 +29,8 @@ function PartGeometry({ shape }: { shape: PartShape }) {
 type PartMeshProps = {
   part: Part;
   isSelected?: boolean;
-  meshRef?: Ref<Mesh>;
-  onClick?: (event: ThreeEvent<MouseEvent>) => void;
+  meshRef?: Ref<Mesh> | undefined;
+  onClick?: ((event: ThreeEvent<MouseEvent>) => void) | undefined;
 };
 
 function PartMesh({ part, isSelected = false, meshRef, onClick }: PartMeshProps) {
@@ -43,7 +43,7 @@ function PartMesh({ part, isSelected = false, meshRef, onClick }: PartMeshProps)
       scale={part.size}
       castShadow={opacity > 0.05}
       receiveShadow
-      onClick={onClick}
+      {...(onClick ? { onClick } : {})}
     >
       <PartGeometry shape={part.shape} />
       <meshStandardMaterial

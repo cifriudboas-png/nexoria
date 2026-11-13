@@ -107,21 +107,21 @@ export function createStarterWorld(names: PartNames): Part[] {
 
 /** Caixa alinhada aos eixos que envolve o objeto, já considerando a rotação. */
 export function partBounds(part: Pick<Part, 'position' | 'size' | 'rotation'>): { min: Vec3; max: Vec3 } {
-  const [rx, ry, rz] = part.rotation.map((d) => (d * Math.PI) / 180);
+  const [rx, ry, rz] = part.rotation.map((d) => (d * Math.PI) / 180) as Vec3;
   const cx = Math.cos(rx), sx = Math.sin(rx);
   const cy = Math.cos(ry), sy = Math.sin(ry);
   const cz = Math.cos(rz), sz = Math.sin(rz);
   // Matriz de rotação na ordem XYZ (a mesma do three.js).
-  const m = [
+  const m: [Vec3, Vec3, Vec3] = [
     [cy * cz, -cy * sz, sy],
     [cx * sz + sx * sy * cz, cx * cz - sx * sy * sz, -sx * cy],
     [sx * sz - cx * sy * cz, sx * cz + cx * sy * sz, cx * cy],
   ];
-  const h = part.size.map((s) => s / 2);
-  const half = m.map((row) => Math.abs(row[0]) * h[0] + Math.abs(row[1]) * h[1] + Math.abs(row[2]) * h[2]);
+  const [hx, hy, hz] = part.size.map((s) => s / 2) as Vec3;
+  const half = m.map(([a, b, c]) => Math.abs(a) * hx + Math.abs(b) * hy + Math.abs(c) * hz) as Vec3;
   return {
-    min: part.position.map((p, i) => p - half[i]) as Vec3,
-    max: part.position.map((p, i) => p + half[i]) as Vec3,
+    min: part.position.map((p, i) => p - (half[i] ?? 0)) as Vec3,
+    max: part.position.map((p, i) => p + (half[i] ?? 0)) as Vec3,
   };
 }
 
@@ -193,7 +193,10 @@ export function parseWorld(text: string | null): Part[] | null {
   const result: Part[] = [];
   for (const raw of parts.slice(0, MAX_PARTS)) {
     if (!raw || typeof raw !== 'object') continue;
-    const p = raw as Record<string, unknown>;
+    const p = raw as {
+      id?: unknown; name?: unknown; shape?: unknown; position?: unknown; size?: unknown;
+      rotation?: unknown; color?: unknown; transparency?: unknown; anchored?: unknown;
+    };
     if (typeof p.id !== 'string' || seen.has(p.id)) continue;
     if (!isVec3(p.position) || !isVec3(p.size) || !isVec3(p.rotation)) continue;
     seen.add(p.id);
