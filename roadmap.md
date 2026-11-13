@@ -18,3 +18,5 @@
 - [x] Messages tab: chat between players
 - [x] Give the Admin panel to Vini_G
 - [x] Content filter: swear words, extreme violence, sexual content masked with # + warning (chat, items, games, usernames)
+- [x] Forums: players post and reply, edit/delete own posts and replies, search
+- [x] Remove the Blog, Groups, Trades and "Assinar Premium" buttons from the menu
