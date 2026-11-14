@@ -31,6 +31,7 @@ import FriendsView from '@/components/home/FriendsView';
 import HomeFriendsSection from '@/components/home/HomeFriendsSection';
 import MessagesView from '@/components/home/MessagesView';
 import ForumView from '@/components/home/ForumView';
+import BuilderView from '@/builder/BuilderView';
 import VerifiedBadge from '@/components/home/VerifiedBadge';
 import type { Account } from '@/lib/account';
 import type { PlayerSummary } from '@/lib/friends';
@@ -256,6 +257,10 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
   const ownedItems: CatalogItemId[] = [...ownedHair, ...ownedFaces, ...ownedAccessories];
 
   const openProfile = () => setView('profile');
+
+  if (view === 'create') {
+    return <BuilderView username={displayName} onExit={() => setView('home')} />;
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-stone-200 dark:bg-stone-950">
