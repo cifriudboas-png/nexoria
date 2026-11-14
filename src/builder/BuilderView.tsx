@@ -9,6 +9,7 @@ import {
   MousePointer2,
   Play,
   RotateCcw,
+  Save,
   Rotate3d,
   Scaling,
   Smartphone,
@@ -38,7 +39,6 @@ import {
   createPart,
   createStarterWorld,
   duplicatePart,
-  parseWorld,
   sanitizePart,
   serializeWorld,
   type Part,
@@ -53,9 +53,15 @@ import type { TranslationKey } from '@/lib/translations';
 const BuilderScene = lazy(() => import('@/builder/BuilderScene'));
 
 type BuilderViewProps = {
-  username: string;
+  /** Name shown next to the title; null for the guest practice world. */
+  gameName: string | null;
+  initialParts: Part[] | null;
+  /** Saves the world to the account; missing for guests, who cannot save. */
+  onSave?: ((parts: Part[]) => Promise<void>) | undefined;
   onExit: () => void;
 };
+
+type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
 const SHAPE_ICONS: Record<PartShape, LucideIcon> = { block: Box, sphere: Circle, cylinder: Cylinder };
 const SHAPE_LABELS: Record<PartShape, TranslationKey> = {
@@ -70,20 +76,22 @@ const TOOLS: { tool: BuilderTool; icon: LucideIcon; label: TranslationKey; key: 
   { tool: 'rotate', icon: Rotate3d, label: 'builderToolRotate', key: '4' },
 ];
 
-const storageKey = (username: string) => `nexoria-builder:${username.toLowerCase()}`;
-
 function isTyping(target: EventTarget | null): boolean {
   return target instanceof HTMLElement && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
 }
 
-export default function BuilderView({ username, onExit }: BuilderViewProps) {
+export default function BuilderView({ gameName, initialParts, onSave, onExit }: BuilderViewProps) {
   const { t } = usePreferences();
   const names: PartNames = useMemo(
     () => ({ baseplate: t('builderBaseplate'), block: t('builderBlock'), sphere: t('builderSphere'), cylinder: t('builderCylinder') }),
     [t],
   );
-  const [parts, setParts] = useState<Part[]>(() => createStarterWorld(names));
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [parts, setParts] = useState<Part[]>(() => initialParts ?? createStarterWorld(names));
+  // What the account has right now; differences mean there is something to save.
+  const [savedSnapshot, setSavedSnapshot] = useState(() => serializeWorld(initialParts ?? []));
+  const [saveState, setSaveState] = useState<SaveState>('idle');
+  const [saveErrorKey, setSaveErrorKey] = useState<TranslationKey>('builderSaveError');
+  const [confirmExit, setConfirmExit] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [tool, setTool] = useState<BuilderTool>('move');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -93,24 +101,57 @@ export default function BuilderView({ username, onExit }: BuilderViewProps) {
 
   const selected = parts.find((p) => p.id === selectedId) ?? null;
 
-  // Mundo salvo neste aparelho (só depois de carregar a página).
-  useEffect(() => {
-    const saved = parseWorld(window.localStorage.getItem(storageKey(username)));
-    if (saved) setParts(saved);
-    setIsLoaded(true);
-  }, [username]);
+  const hasUnsavedChanges = onSave !== undefined && serializeWorld(parts) !== savedSnapshot;
+
+  const save = useCallback(async () => {
+    if (!onSave || saveState === 'saving') return;
+    const snapshot = serializeWorld(parts);
+    setSaveState('saving');
+    try {
+      await onSave(parts);
+      setSavedSnapshot(snapshot);
+      setSaveState('saved');
+    } catch (error) {
+      const key = error && typeof error === 'object' && 'key' in error ? (error.key as TranslationKey) : 'builderSaveError';
+      setSaveErrorKey(key);
+      setSaveState('error');
+    }
+  }, [onSave, parts, saveState]);
 
   useEffect(() => {
-    if (!isLoaded) return;
-    const timer = window.setTimeout(() => {
-      try {
-        window.localStorage.setItem(storageKey(username), serializeWorld(parts));
-      } catch {
-        // Sem espaço no aparelho: o mundo continua aberto, só não é salvo.
-      }
-    }, 400);
+    if (saveState !== 'saved') return;
+    const timer = window.setTimeout(() => setSaveState('idle'), 2500);
     return () => window.clearTimeout(timer);
-  }, [parts, isLoaded, username]);
+  }, [saveState]);
+
+  // Avisa antes de fechar a aba com mudanças não salvas.
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => window.removeEventListener('beforeunload', onBeforeUnload);
+  }, [hasUnsavedChanges]);
+
+  const requestExit = () => {
+    if (hasUnsavedChanges) setConfirmExit(true);
+    else onExit();
+  };
+
+  const saveAndExit = async () => {
+    if (!onSave) return onExit();
+    setSaveState('saving');
+    try {
+      await onSave(parts);
+      onExit();
+    } catch (error) {
+      const key = error && typeof error === 'object' && 'key' in error ? (error.key as TranslationKey) : 'builderSaveError';
+      setSaveErrorKey(key);
+      setSaveState('error');
+      setConfirmExit(false);
+    }
+  };
 
   // Em celulares, tenta travar a tela na horizontal (só funciona em alguns navegadores).
   useEffect(() => {
@@ -165,6 +206,11 @@ export default function BuilderView({ username, onExit }: BuilderViewProps) {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+        event.preventDefault();
+        void save();
+        return;
+      }
       if (isTyping(event.target)) return;
       if ((event.key === 'Delete' || event.key === 'Backspace') && selectedId) {
         event.preventDefault();
@@ -179,7 +225,7 @@ export default function BuilderView({ username, onExit }: BuilderViewProps) {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [selectedId, deleteSelected, duplicateSelected]);
+  }, [selectedId, deleteSelected, duplicateSelected, save]);
 
   return (
     <div className="fixed inset-0 z-40 flex h-dvh flex-col bg-stone-900 text-stone-100">
@@ -193,7 +239,7 @@ export default function BuilderView({ username, onExit }: BuilderViewProps) {
         </div>
         <button
           type="button"
-          onClick={onExit}
+          onClick={requestExit}
           className="rounded-lg border border-stone-700 px-4 py-2 text-sm font-semibold text-stone-200 hover:bg-stone-800"
         >
           {t('builderExit')}
@@ -204,6 +250,9 @@ export default function BuilderView({ username, onExit }: BuilderViewProps) {
         <div className="flex shrink-0 items-center gap-2">
           <h1 className="text-base font-black tracking-tight sm:text-lg">{t('builderTitle')}</h1>
           <img src={builderLogo.url} alt={t('builderLogoAlt')} className="h-9 w-auto object-contain" />
+          <span className="hidden max-w-[10rem] truncate text-sm font-semibold text-stone-400 lg:inline" data-testid="builder-game-name">
+            {gameName ? cleanText(gameName) : t('builderPracticeWorld')}
+          </span>
         </div>
 
         <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto" role="toolbar" aria-label={t('builderToolsLabel')}>
@@ -249,9 +298,33 @@ export default function BuilderView({ username, onExit }: BuilderViewProps) {
           </button>
         </div>
 
+        {onSave ? (
+          <button
+            type="button"
+            onClick={() => void save()}
+            disabled={saveState === 'saving'}
+            title={`${t('builderSave')} (Ctrl+S)`}
+            className={`flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-bold transition-colors disabled:opacity-70 ${
+              hasUnsavedChanges ? 'bg-sky-600 text-white hover:bg-sky-500' : 'bg-stone-800 text-stone-200 hover:bg-stone-700'
+            }`}
+          >
+            <Save className="h-4 w-4" />
+            {saveState === 'saving'
+              ? t('builderSaving')
+              : saveState === 'saved'
+                ? t('builderSaved')
+                : t('builderSave')}
+            {hasUnsavedChanges && saveState !== 'saving' && (
+              <span className="h-2 w-2 rounded-full bg-amber-300" aria-label={t('builderUnsaved')} />
+            )}
+          </button>
+        ) : (
+          <span className="hidden shrink-0 text-xs text-stone-400 md:inline">{t('builderGuestNoSave')}</span>
+        )}
+
         <button
           type="button"
-          onClick={onExit}
+          onClick={requestExit}
           className="flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-stone-300 hover:bg-stone-800 hover:text-white"
         >
           <X className="h-4 w-4" />
@@ -278,6 +351,11 @@ export default function BuilderView({ username, onExit }: BuilderViewProps) {
           {isPlaying && (
             <p className="pointer-events-none absolute left-1/2 top-3 max-w-[90%] -translate-x-1/2 rounded-md bg-stone-950/80 px-3 py-1.5 text-center text-xs font-medium text-emerald-300">
               {t('builderPlayingNote')}
+            </p>
+          )}
+          {saveState === 'error' && (
+            <p role="alert" className="absolute left-1/2 top-12 -translate-x-1/2 rounded-md bg-red-600 px-3 py-1.5 text-xs font-bold text-white">
+              {t(saveErrorKey)}
             </p>
           )}
           {notice && (
@@ -327,10 +405,28 @@ export default function BuilderView({ username, onExit }: BuilderViewProps) {
                 <p className="text-xs text-stone-400">{t('builderNoSelection')}</p>
               )}
             </div>
-            <p className="border-t border-stone-800 px-3 py-1.5 text-[10px] text-stone-500">{t('builderSavedLocal')}</p>
+            <p className="border-t border-stone-800 px-3 py-1.5 text-[10px] text-stone-500">
+              {!onSave ? t('builderGuestNoSave') : hasUnsavedChanges ? t('builderUnsaved') : t('builderAllSaved')}
+            </p>
           </section>
         </aside>
       </div>
+
+      <AlertDialog open={confirmExit} onOpenChange={setConfirmExit}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('builderExitTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('builderExitText')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('builderCancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={onExit} className="bg-stone-600 hover:bg-stone-500">
+              {t('builderExitWithoutSaving')}
+            </AlertDialogAction>
+            <AlertDialogAction onClick={() => void saveAndExit()}>{t('builderSaveAndExit')}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={confirmReset} onOpenChange={setConfirmReset}>
         <AlertDialogContent>

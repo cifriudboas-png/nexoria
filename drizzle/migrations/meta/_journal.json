@@ -57,6 +57,20 @@
       "when": 1794360076526,
       "tag": "0007_forums_posts_and_replies",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794619088238,
+      "tag": "0008_builder_games",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794619100048,
+      "tag": "0009_builder_games_count_own_only",
+      "breakpoints": true
     }
   ]
 }
