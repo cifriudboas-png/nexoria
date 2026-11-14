@@ -31,7 +31,7 @@ import FriendsView from '@/components/home/FriendsView';
 import HomeFriendsSection from '@/components/home/HomeFriendsSection';
 import MessagesView from '@/components/home/MessagesView';
 import ForumView from '@/components/home/ForumView';
-import BuilderView from '@/builder/BuilderView';
+import BuilderGamesView from '@/builder/BuilderGamesView';
 import VerifiedBadge from '@/components/home/VerifiedBadge';
 import type { Account } from '@/lib/account';
 import type { PlayerSummary } from '@/lib/friends';
@@ -258,10 +258,6 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
 
   const openProfile = () => setView('profile');
 
-  if (view === 'create') {
-    return <BuilderView username={displayName} onExit={() => setView('home')} />;
-  }
-
   return (
     <div className="flex min-h-screen flex-col bg-stone-200 dark:bg-stone-950">
       <HomeTopBar
@@ -336,6 +332,8 @@ export default function HomeScreen({ account, onSignOut }: HomeScreenProps) {
             />
           ) : view === 'friends' ? (
             <FriendsView isGuest={isGuest} currentUsername={displayName} onOpenPlayer={openPlayer} />
+          ) : view === 'create' ? (
+            <BuilderGamesView isGuest={isGuest} />
           ) : view === 'forums' ? (
             <ForumView isGuest={isGuest} myUserId={myUserId} isAdmin={isAdmin} onOpenPlayer={openPlayer} />
           ) : view === 'messages' ? (
