@@ -330,8 +330,8 @@ export type Database = {
         Args: { _banned: boolean; _user_id: string }
         Returns: undefined
       }
-      builder_game_count: { Args: { _owner: string }; Returns: number }
       builder_is_active_player: { Args: never; Returns: boolean }
+      builder_my_game_count: { Args: never; Returns: number }
       catalog_price: { Args: { _item: string }; Returns: number }
       create_forum_post: {
         Args: { _body: string; _title: string }

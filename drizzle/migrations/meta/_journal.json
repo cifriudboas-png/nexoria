@@ -64,6 +64,13 @@
       "when": 1794619088238,
       "tag": "0008_builder_games",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794619100048,
+      "tag": "0009_builder_games_count_own_only",
+      "breakpoints": true
     }
   ]
 }
