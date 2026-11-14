@@ -20,3 +20,4 @@
 - [x] Content filter: swear words, extreme violence, sexual content masked with # + warning (chat, items, games, usernames)
 - [x] Forums: players post and reply, edit/delete own posts and replies, search
 - [x] Remove the Blog, Groups, Trades and "Assinar Premium" buttons from the menu
+- [x] Nexoria Builder in "Criar": logo + title, landscape-only, 3D world with gray platform and blocks, select/move/size/rotate, Explorer + Properties panel, Test mode
