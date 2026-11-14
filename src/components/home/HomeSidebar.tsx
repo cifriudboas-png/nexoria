@@ -12,7 +12,7 @@ import {
 import { usePreferences } from '@/lib/preferences-context';
 import type { TranslationKey } from '@/lib/translations';
 
-export type HomeView = 'home' | 'profile' | 'friends' | 'messages' | 'catalog' | 'avatar' | 'inventory' | 'forums' | 'admin';
+export type HomeView = 'home' | 'profile' | 'friends' | 'messages' | 'catalog' | 'avatar' | 'inventory' | 'forums' | 'admin' | 'create';
 
 type SidebarItem = {
   label: TranslationKey;

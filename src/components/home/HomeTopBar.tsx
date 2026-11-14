@@ -17,7 +17,7 @@ type HomeTopBarProps = {
 const NAV_LINKS: { label: TranslationKey; view?: HomeView }[] = [
   { label: 'navGames', view: 'home' },
   { label: 'navCatalog', view: 'catalog' },
-  { label: 'navCreate' },
+  { label: 'navCreate', view: 'create' },
 ];
 
 export default function HomeTopBar({ displayName, nexos, activeView, onNavigate, onSignOut, onOpenProfile }: HomeTopBarProps) {

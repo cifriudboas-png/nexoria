@@ -37,7 +37,7 @@ function PartMesh({ part, isSelected = false, meshRef, onClick }: PartMeshProps)
   const opacity = 1 - part.transparency;
   return (
     <mesh
-      ref={meshRef}
+      {...(meshRef ? { ref: meshRef } : {})}
       position={part.position}
       rotation={toRadians(part.rotation)}
       scale={part.size}
